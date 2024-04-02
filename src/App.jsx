@@ -1,11 +1,13 @@
+import { Route, Routes } from 'react-router-dom';
 import './App.css';
+import SignIn from './Pages/SignIn/SignIn';
 
 function App() {
-  return (
-    <div className="App">
-      <h1 className=" font-bold underline pt-3 text-3xl decoration-red-600">Hello world!</h1>
-    </div>
-  );
+    return (
+        <Routes className="font-noto">
+            <Route path="/sign-in" element={<SignIn />} />
+        </Routes>
+    );
 }
 
 export default App;
