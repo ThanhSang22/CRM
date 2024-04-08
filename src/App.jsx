@@ -1,10 +1,15 @@
+import { Route, Routes } from 'react-router-dom';
 import './App.css';
+import SignIn from './pages/signIn/signIn';
+import KanbanBoard from './pages/kanban/kanbanBoard';
+import Login from './components/login';
 
 function App() {
   return (
-    <div className="App">
-      <h1 className=" font-bold underline pt-3 text-3xl decoration-red-600">Hello world!</h1>
-    </div>
+    <Routes className="App">
+      <Route path="/" element={<SignIn />} />
+      <Route path="/kanban-board" element={<KanbanBoard />} />
+    </Routes>
   );
 }
 
