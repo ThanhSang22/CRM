@@ -1,8 +1,7 @@
 import { Route, Routes } from 'react-router-dom';
 import './App.css';
-import SignIn from './pages/signIn/signIn';
+import SignIn from './pages/SignIn/SignIn';
 import KanbanBoard from './pages/kanban/kanbanBoard';
-import Login from './components/login';
 
 function App() {
   return (
