@@ -1,48 +1,46 @@
 import React, { useState } from 'react';
 import { IoIosClose } from 'react-icons/io';
-import InputCreate from './components/inputCreate';
 import { Dialog, DialogBody, DialogFooter, Option, Select, Switch } from '@material-tailwind/react';
-import { v4 as uuidv4 } from 'uuid';
-import Task from '../kanban/components/task';
-// <div className={`bg-[#00000060] w-full flex items-center justify-center ${className} `}>
-//   <div className="w-[60%] space-y-10 py-6 px-[50px] bg-white rounded-[10px] flex flex-col justify-between"></div>
-// </div>;
+import InputCreate from './components/inputCreate';
 
-const CreateOpportunity = ({ onCloseCreate, className, handleAddTask }) => {
+const CreateOpportunity = ({ onCloseCreate, handleAddTask, columns, value }) => {
   const initialTaskData = {
-    id: uuidv4(),
     name: '',
     email: '',
-    // priority: "",
     phone: '',
     website: '',
     address: '',
     customer: false,
-    stage: [],
+    stage: '',
   };
 
   const [taskData, setTaskData] = useState(initialTaskData);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setTaskData({ ...taskData, [name]: value });
+    if (e && e.target && e.target.name && e.target.value) {
+      // const { name, value } = e.target;
+      setTaskData((prevData) => ({
+        ...prevData,
+        [e.target.name]: e.target.value,
+      }));
+    }
   };
 
-  const closeModal = () => {
+  const handleSave = () => {
+    // if (taskData.name.trim() !== '' && taskData.stage.trim() !== '') {
+    //   handleAddTask(taskData);
+    //   onCloseCreate();
+    //   setTaskData(initialTaskData);
+    // } else {
+    //   alert('Please fill in all required fields.');
+    // }
+    handleAddTask(taskData);
     onCloseCreate();
     setTaskData(initialTaskData);
   };
 
-  const handleSave = () => {
-    // handleAddTask(taskData);
-    closeModal();
-  };
   return (
-    <Dialog
-      open={true}
-      // handler={onCloseCreate}
-      className="w-[60%] space-y-10 py-6 px-[20px] bg-white rounded-[10px] flex flex-col justify-between "
-    >
+    <Dialog open={true} handler={onCloseCreate}>
       <span
         className="text-4xl text-end flex justify-end text-[#8E8E8E] cursor-pointer"
         onClick={onCloseCreate}
@@ -50,34 +48,48 @@ const CreateOpportunity = ({ onCloseCreate, className, handleAddTask }) => {
         <IoIosClose />
       </span>
       <h1 className="text-3xl text-[#4D648D] font-bold text-center my-[50px]">
-        CREATE OPPORRTUNITY
+        CREATE OPPORTUNITY
       </h1>
-
       <DialogBody className="space-y-5">
         <InputCreate
+          type="text"
           name="Name"
-          value={taskData.name}
-          onChange={(e) => setTaskData(e.target.value)}
+          onChange={handleChange}
+          placeholder="Name"
+          className="InputCreate-create"
+          value={value}
         />
         <InputCreate
+          type="text"
           name="Email"
-          value={taskData.email}
-          onChange={(e) => setTaskData(e.target.value)}
+          onChange={handleChange}
+          placeholder="Email"
+          className="input-create"
+          value={value}
         />
         <InputCreate
+          type="text"
           name="Phone"
-          value={taskData.phone}
-          onChange={(e) => setTaskData(e.target.value)}
+          onChange={handleChange}
+          placeholder="Phone"
+          className="input-create"
+          value={value}
         />
         <InputCreate
+          type="text"
           name="Website"
-          value={taskData.website}
-          onChange={(e) => setTaskData(e.target.value)}
+          onChange={handleChange}
+          placeholder="Website"
+          className="InputCreate-create"
+          value={value}
         />
         <InputCreate
+          type="text"
           name="Address"
-          value={taskData.address}
-          onChange={(e) => setTaskData(e.target.value)}
+          onChange={handleChange}
+          placeholder="Address"
+          className="InputCreate-create"
+          value={value}
         />
         <div className="flex gap-3 mt-10 ml-[50px]">
           <h1 className="font-bold text-[#4D648D]">Customer</h1>
@@ -91,25 +103,30 @@ const CreateOpportunity = ({ onCloseCreate, className, handleAddTask }) => {
             circleProps={{
               className: 'before:hidden left-0 border-none',
             }}
-            value={taskData.customer}
-            onChange={(e) => setTaskData(e.target.value)}
+            checked={taskData.customer}
+            onChange={(e) => setTaskData({ ...taskData, customer: e.target.checked })}
           />
         </div>
         <div className="w-40 flex gap-4 items-center ml-[50px]">
           <h1 className="font-bold mt-2 text-[#4D648D]">Stage</h1>
           <Select
             variant="standard"
-            className="!h-7 !p-4 text-base"
+            className="!h-7 !p-4 text-base text-black"
             animate={{
               mount: { y: 0 },
               unmount: { y: 25 },
             }}
-            onChange={(e) => setTaskData(e.target.value)}
-            value={taskData.priority}
+            onChange={(e) => setTaskData({ ...taskData, stage: e.target.value })}
+            name="stage"
           >
-            <Option>New</Option>
-            <Option>Qualified</Option>
-            <Option>Proposition</Option>
+            <Option disabled value="">
+              Select Stage
+            </Option>
+            {Object.keys(columns).map((column) => (
+              <Option key={column} value={column}>
+                {column}
+              </Option>
+            ))}
           </Select>
         </div>
       </DialogBody>
