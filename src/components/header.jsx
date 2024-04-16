@@ -7,8 +7,7 @@ import classNames from 'classnames';
 import { Fragment } from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import { Link } from 'react-router-dom';
-import KanbanBoard from '../pages/kanban/kanbanBoard';
-import CreateOpportunity from '../pages/createOpportunity/createOpportunity';
+import CreateOpportunity from '../Pages/createOpportunity/createOpportunity';
 import { MdOutlineViewKanban } from 'react-icons/md';
 import { TiContacts } from 'react-icons/ti';
 import { LiaFileAltSolid } from 'react-icons/lia';
@@ -29,25 +28,25 @@ export default function Header({ ShowChangePass }) {
       icon: <LiaFileAltSolid />,
       label: 'Opportunity',
       value: 'opportunity',
-      path: '/opportunity',
+      path: '/opportunities',
     },
     {
       icon: <TiContacts />,
       label: 'Contact',
       value: 'contact',
-      path: '/contact',
+      path: '/contacts',
     },
     {
       icon: <IoDocumentAttachOutline />,
       label: 'File',
       value: 'file',
-      path: `/file`,
+      path: `/files`,
     },
     {
       icon: <BsPeople />,
       label: 'User',
       value: 'user',
-      path: `/user`,
+      path: `/users`,
     },
   ];
 
