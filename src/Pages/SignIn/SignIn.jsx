@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -9,9 +9,11 @@ import { FaRegUser } from 'react-icons/fa';
 import { HiOutlineLockClosed } from 'react-icons/hi2';
 import 'react-toastify/dist/ReactToastify.css';
 import CustomInput from '../../components/customInput';
-import { toast } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import auth from '../../features/auth/api';
 import ForgotPassword from '../forgotPassword/forgotPassword';
+import { useDispatch } from 'react-redux';
+import { loginSuccess } from '../../redux/action/auth';
 
 const loginSchema = yup.object().shape({
   username: yup.string().required('*Invalid username'),
@@ -31,36 +33,33 @@ const SignIn = () => {
     resolver: yupResolver(loginSchema),
   });
 
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleLogin = async (payload) => {
     try {
       const res = await auth.login(payload);
       if (res) {
-        //TODO: show message login successfully
-        console.log(res);
-        //TODO: redirect to dashboard
-        alert('Login successfully');
+        // Save token to local storage
+        localStorage.setItem('token', res.token);
+        // Dispatch login action
+        dispatch(loginSuccess(res.token));
         toast.success('Login successfully');
         navigate('/kanban-board');
       }
     } catch (error) {
-      //TODO: show message error (message error from  BE)
-      alert(`Login Failed due to ${error.message}`);
       toast.error(`Login Failed due to ${error.message}`);
-      console.log(error.message);
-      //  toast.error('Login Failed due to ', error.message)
     }
   };
 
   const onSubmit = (data) => {
     console.log(data);
     handleLogin(data);
-    // navigate('/kanban-board');
   };
 
   return (
     <div className="flex bg-[#4D648D] w-full h-[100vh]">
+      <ToastContainer />
       <div className="w-[50%] flex flex-col items-center py-[65px] md:px-0 px-10">
         <div className="space-y-3">
           <h1 className="text-white lg:text-5xl leading-9 tracking-tight text-start font-semibold text-4xl">
