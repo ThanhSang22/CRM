@@ -1,13 +1,50 @@
-import React from 'react';
-import { users } from '../../../data/users';
+import React, { useEffect, useState } from 'react';
+// import { users } from '../../../data/users';
 import { Avatar, Checkbox } from '@material-tailwind/react';
 import avatar from '../../../assets/images/avatar.png';
+import Paging from '../../../components/paging';
+import Tools from './tools';
+import users from '../../../features/user';
 
 const titles = ['Name', 'Email', 'Mobile', 'Birthday', 'Gender', 'Role'];
 
 const UserTags = () => {
+  const [allUsers, setAllUsers] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const res = await users.getUsers(currentPage - 1);
+        console.log('check-------', res);
+        setAllUsers(res);
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
+
+    getData();
+  }, [currentPage]);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
   return (
     <>
+      <div className="flex justify-between text-[#4D648D]">
+        <h1 className="text-slate-500 text-3xl font-semibold">User</h1>
+        <p className="text-slate-500 text-base font-normal ">Total users: {allUsers.totalItems}</p>
+      </div>
+      <div className="flex justify-between mt-8 mb-2">
+        <Tools />
+        <Paging
+          currentPage={currentPage}
+          setCurrentPage={handlePageChange}
+          totalOpportunities={allUsers.totalItems}
+          totalPages={allUsers.totalPages}
+        />
+      </div>
       <div
         className="h-11 bg-[#D9D9D980] bg-opacity-50 rounded-lg flex justify-between 
         items-center pr-2 mb-5 gap-3"
@@ -15,6 +52,7 @@ const UserTags = () => {
         {titles.map((title) => {
           return (
             <div
+              key={title}
               className={`text-base font-semibold font-['Noto Sans']
                 ${
                   title === 'Name'
@@ -35,9 +73,12 @@ const UserTags = () => {
           );
         })}
       </div>
-      {users.map((user, u) => {
+      {allUsers.users?.map((user, u) => {
         const roleString = user.roles.join();
         const role = roleString.slice(5).toLowerCase();
+
+        const birthday = user.birthday?.substr(0, 10);
+
         return (
           <div
             key={u}
@@ -45,20 +86,23 @@ const UserTags = () => {
             justify-between items-center pr-2 mt-3 hover:shadow-[4px_4px_4px_0_rgba(77,100,141,0.5)] text-ellipsis"
           >
             <div className="flex">
-              <Checkbox />
+              <Checkbox
+                ripple={false}
+                className="transition-all hover:scale-105 hover:before:opacity-0 checked:bg-[#4D648D] checked:border-[#4D648D]"
+              />
               <Avatar src={avatar} />
             </div>
             <div className="w-[20%]">
               <h1 className="text-black text-base font-semibold font-['Noto Sans'] whitespace-nowrap">
                 {user.firstname + ' ' + user.lastname}
               </h1>
-              <p className="text-[#8E8E8E] text-sm italic">@trangtt</p>
+              <p className="text-[#8E8E8E] text-sm italic">@{user.username}</p>
             </div>
             <div className="w-[25%] text-base font-['Noto Sans'] whitespace-nowrap text-ellipsis">
               {user.email}
             </div>
             <p className="w-[13%]">{user.phone}</p>
-            <p className="text-base w-[12%] ">{user.birthday}</p>
+            <p className="text-base w-[12%] ">{birthday}</p>
             <p className="w-[10%] whitespace-nowrap">{user.gender}</p>
             <p className="w-[7%] capitalize">{role}</p>
           </div>
