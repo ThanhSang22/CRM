@@ -1,132 +1,182 @@
-import React, { useCallback, useState } from 'react';
-import { DragDropContext } from '@hello-pangea/dnd';
-import Column from './column';
-import { Dialog, DialogBody } from '@material-tailwind/react';
+import React, { useEffect, useState } from 'react';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
+import { MdOutlineAccessTimeFilled } from 'react-icons/md';
+import { Avatar, Dialog, DialogBody, Rating } from '@material-tailwind/react';
 import party from '../../../assets/images/party.png';
-import salesPerson from '../../../assets/images/salesperson.png';
+import board from '../../../features/board/api';
+import AddOpportunity from '../../createOpportunity/abc';
 import HeaderBoard from './header-board';
-import CreateOpportunity from '../../createOpportunity/createOpportunity';
+import { Link } from 'react-router-dom';
 
 function Board() {
-  const [items, setItems] = useState([
-    { id: 'item-1', name: 'Task 1', revenue: 1500000000, column: 'New' },
-    { id: 'item-2', name: 'Task 2', revenue: 2000000000, column: 'Qualified' },
-    { id: 'item-3', name: 'Task 3', revenue: 1800000000, column: 'Proposition' },
-  ]);
-
-  const [columns, setColumns] = useState({
-    New: [],
-    Qualified: [],
-    Proposition: [],
-    Won: [],
-  });
-
-  const [isCreatingTask, setIsCreatingTask] = useState(false);
-  const [newTask, setNewTask] = useState({ name: '', revenue: '', column: '' });
+  const [stages, setStages] = useState([]);
+  const [opportunities, setOpportunities] = useState([]);
   const [showCongratsModal, setShowCongratsModal] = useState(false);
+  const [isCreatingOpportunity, setIsCreatingOpportunity] = useState(false);
 
-  //Xử lý kéo thả
-  const onDragEnd = useCallback(
-    (result) => {
-      if (!result.destination) return;
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const getStageData = await board.getStage();
+        const getOpportunities = await board.getOpportunitiesStage();
 
-      const { source, destination } = result;
-      const sourceColumn = columns[source.droppableId];
-      const destColumn = columns[destination.droppableId];
+        console.log('check-stage--', getStageData);
+        console.log('check-getOpportunities-', getOpportunities);
 
-      if (source.droppableId === destination.droppableId) {
-        const newItems = [...sourceColumn];
-        const movedItem = newItems.splice(source.index, 1)[0];
-        newItems.splice(destination.index, 0, movedItem);
-        setColumns({ ...columns, [source.droppableId]: newItems });
-      } else {
-        const movedItem = sourceColumn.splice(source.index, 1)[0];
-        movedItem.column = destination.droppableId;
-        destColumn.splice(destination.index, 0, movedItem);
-        setColumns({
-          ...columns,
-          [source.droppableId]: sourceColumn,
-          [destination.droppableId]: destColumn,
-        });
-
-        // Kiểm tra xem item có được kéo vào cột "Won" không
-        if (destination.droppableId === 'Won') {
-          setShowCongratsModal(true); // Hiển thị modal chúc mừng
-          setTimeout(() => {
-            setShowCongratsModal(false); // Ẩn modal sau 3 giây
-          }, 3000);
+        // Kiểm tra xem res có phải là mảng không
+        if (Array.isArray(getStageData, getOpportunities)) {
+          setStages(getStageData); // Gán kết quả vào stages nếu res là mảng
+          setOpportunities(getOpportunities);
+        } else {
+          console.error('Kết quả trả về không phải là một mảng');
         }
+      } catch (error) {
+        console.log(error.message);
       }
-    },
-    [columns],
-  );
+    };
 
-  const toggleCreatingTask = () => {
-    setIsCreatingTask(!isCreatingTask);
-  };
+    getData();
+  }, []);
+  const onDragEnd = (result) => {
+    const { source, destination } = result;
 
-  const handleDeleteColumn = (column) => {
-    const updatedColumns = { ...columns };
-    delete updatedColumns[column];
-    setColumns(updatedColumns);
-  };
+    // Kiểm tra xem phép kéo thả có hợp lệ không
+    if (!destination) return;
 
-  const handleAddTask = (column) => {
-    setNewTask({ name: '', revenue: '', column: column });
-  };
+    // Lấy opportunity được kéo thả
+    const draggedOpportunity = opportunities.find(
+      (opportunity) => opportunity.id === result.draggableId,
+    );
 
-  const handleAddTaskInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewTask({ ...newTask, [name]: value });
-  };
+    // Kiểm tra xem opportunity có được di chuyển sang cột mới hay không
+    const isMovedToNewColumn = source.droppableId !== destination.droppableId;
 
-  const onSubmitTask = () => {
-    if (newTask.name.trim() !== '') {
-      const task = {
-        id: `item-${columns[newTask.column].length + 1}`,
-        name: newTask.name,
-        revenue: newTask.revenue,
-        column: newTask.column,
-        avatar: salesPerson, // Avatar placeholder, bạn có thể thay đổi hình ảnh này sau
+    // Lấy danh sách cơ hội từ cột nguồn
+    const sourceOpportunities = opportunities.filter(
+      (opportunity) => opportunity.stage.id === source.droppableId,
+    );
+
+    if (isMovedToNewColumn) {
+      // Cập nhật cột đích của opportunity
+      const updatedDraggedOpportunity = {
+        ...draggedOpportunity,
+        stage: { id: destination.droppableId },
       };
-      setItems([...items, task]);
-      setColumns({ ...columns, [newTask.column]: [...columns[newTask.column], task] });
-      setIsCreatingTask(false);
-      setNewTask({ name: '', revenue: '', column: '' });
+
+      // Cập nhật danh sách cơ hội của cột nguồn
+      const updatedSourceOpportunities = sourceOpportunities.filter(
+        (opportunity) => opportunity.id !== draggedOpportunity.id,
+      );
+
+      // Cập nhật danh sách cơ hội của cột đích
+      const updatedDestinationOpportunities = [
+        ...opportunities.filter((opportunity) => opportunity.id !== draggedOpportunity.id),
+        updatedDraggedOpportunity,
+      ];
+
+      // Cập nhật state
+      setOpportunities([...updatedSourceOpportunities, ...updatedDestinationOpportunities]);
+    } else {
+      // Di chuyển opportunity trong cùng một cột
+      const updatedOpportunities = [...sourceOpportunities];
+
+      // Loại bỏ opportunity khỏi vị trí cũ
+      updatedOpportunities.splice(source.index, 1);
+
+      // Chèn opportunity vào vị trí mới
+      updatedOpportunities.splice(destination.index, 0, draggedOpportunity);
+
+      // Cập nhật state
+      setOpportunities(updatedOpportunities);
+    }
+
+    // Kiểm tra xem item có được kéo vào cột "Won" không
+    if (destination.droppableId === '10a1716a-cd71-488e-8f8a-deb8cb8c6dfc') {
+      setShowCongratsModal(true);
+      setTimeout(() => {
+        setShowCongratsModal(false);
+      }, 3000);
     }
   };
 
-  const handleDeleteTask = (taskId, column) => {
-    const updatedItems = items.filter((item) => item.id !== taskId);
-    const updatedColumns = {
-      ...columns,
-      [column]: columns[column].filter((item) => item.id !== taskId),
-    };
-    setItems(updatedItems);
-    setColumns(updatedColumns);
+  const toggleCreatingOpportunity = () => {
+    setIsCreatingOpportunity(!isCreatingOpportunity);
+  };
+
+  const handleAddOpportunity = (newOpportunity) => {
+    setOpportunities([...opportunities, newOpportunity]);
   };
 
   return (
     <>
-      <HeaderBoard toggleCreatingTask={toggleCreatingTask} />
+      <HeaderBoard toggleCreatingTask={toggleCreatingOpportunity} />
       <div className="bg-[#D9D9D926] mx-5 rounded-t-3xl h-100vh p-2">
         <DragDropContext onDragEnd={onDragEnd}>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            {Object.keys(columns).map((column, index) => (
-              <Column
-                key={column}
-                column={column}
-                tasks={columns[column]}
-                index={index}
-                onAddTask={() => handleAddTask(column)}
-                onDeleteColumn={handleDeleteColumn}
-                onAddTaskInputChange={handleAddTaskInputChange}
-                onSubmitTask={onSubmitTask}
-                newTask={newTask}
-              />
+            {stages.map((stage) => (
+              <React.Fragment key={stage.id}>
+                <Droppable droppableId={stage.id}>
+                  {(provided, snapshot) => (
+                    <div
+                      {...provided.droppableProps}
+                      ref={provided.innerRef}
+                      className={`m-3 w-[310px] max-h-[900px] min-h-[600px] ${snapshot.isDraggingOver ? ' bg-light-blue-50' : ''}`}
+                    >
+                      <div className="group/item sticky z-10 top-0 flex justify-between pr-2 bg-[#f5eeee]">
+                        <h1 className="p-3 font-bold">{stage.name}</h1>
+                      </div>
+
+                      {opportunities.map((opportunity, index) => {
+                        if (opportunity.stage.id === stage.id) {
+                          return (
+                            <Draggable
+                              key={opportunity.id}
+                              draggableId={opportunity.id}
+                              index={index}
+                            >
+                              {(provided, snapshot) => (
+                                <div
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                  className={`${snapshot.isDragging ? 'bg-[#F2D7D5]' : 'bg-[#ffffff]'} p-3 border-[0.3px] border-[#000000] space-y-2`}
+                                >
+                                  <Link to={`/opportunity-detail`}>
+                                    <div className="flex justify-between items-center">
+                                      <h1 className="text-lg font-medium">{opportunity.name}</h1>
+                                      <MdOutlineAccessTimeFilled className="text-[#8E8E8E] text-3xl" />
+                                    </div>
+                                    <p>{opportunity.revenue} VND</p>
+                                    <div className="flex justify-between items-center">
+                                      <Rating count={3} />
+                                      <Avatar
+                                        src={opportunity.avatar?.physicalPath}
+                                        alt="avatar"
+                                        variant="rounded"
+                                        size="xs"
+                                      />
+                                    </div>
+                                  </Link>
+                                  {provided.placeholder}
+                                </div>
+                              )}
+                            </Draggable>
+                          );
+                        }
+                      })}
+                      {provided.placeholder}
+                    </div>
+                  )}
+                </Droppable>
+              </React.Fragment>
             ))}
           </div>
         </DragDropContext>
+        {isCreatingOpportunity && (
+          <AddOpportunity onClose={toggleCreatingOpportunity} onAdd={handleAddOpportunity} />
+        )}
+
+        {/* Modal chúc mừng */}
         <Dialog open={showCongratsModal} onClose={() => setShowCongratsModal(false)}>
           <DialogBody className="flex gap-2 items-center justify-center">
             <img src={party} alt="" width={100} />
@@ -136,13 +186,6 @@ function Board() {
           </DialogBody>
         </Dialog>
       </div>
-      {isCreatingTask && (
-        <CreateOpportunity
-          onCloseCreate={toggleCreatingTask}
-          handleAddTask={handleAddTask}
-          columns={columns}
-        />
-      )}
     </>
   );
 }

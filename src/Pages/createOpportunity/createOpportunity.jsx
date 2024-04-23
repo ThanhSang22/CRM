@@ -1,42 +1,29 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { IoIosClose } from 'react-icons/io';
 import { Dialog, DialogBody, DialogFooter, Option, Select, Switch } from '@material-tailwind/react';
 import InputCreate from './components/inputCreate';
+import { useDispatch, useSelector } from 'react-redux';
+import { clearTaskData, setLoading, setTaskData } from '../../redux/action/opportunity';
 
-const CreateOpportunity = ({ onCloseCreate, handleAddTask, columns, value }) => {
-  const initialTaskData = {
-    name: '',
-    email: '',
-    phone: '',
-    website: '',
-    address: '',
-    customer: false,
-    stage: '',
-  };
-
-  const [taskData, setTaskData] = useState(initialTaskData);
+const CreateOpportunity = ({ onCloseCreate, stages }) => {
+  const dispatch = useDispatch();
+  const taskData = useSelector((state) => state.taskData);
+  const loading = useSelector((state) => state.loading);
 
   const handleChange = (e) => {
-    if (e && e.target && e.target.name && e.target.value) {
-      // const { name, value } = e.target;
-      setTaskData((prevData) => ({
-        ...prevData,
-        [e.target.name]: e.target.value,
-      }));
-    }
+    const { name, value } = e.target;
+    dispatch(setTaskData({ ...taskData, [name]: value }));
   };
 
   const handleSave = () => {
-    // if (taskData.name.trim() !== '' && taskData.stage.trim() !== '') {
-    //   handleAddTask(taskData);
-    //   onCloseCreate();
-    //   setTaskData(initialTaskData);
-    // } else {
-    //   alert('Please fill in all required fields.');
-    // }
-    handleAddTask(taskData);
-    onCloseCreate();
-    setTaskData(initialTaskData);
+    dispatch(setLoading(true));
+    // Thực hiện các thao tác cần thiết ở đây (ví dụ: gọi API)
+    setTimeout(() => {
+      // Giả sử gọi API thành công, sau đó reset trạng thái và đóng dialog
+      dispatch(clearTaskData());
+      dispatch(setLoading(false));
+      onCloseCreate();
+    }, 1000); // Giả định API mất 1 giây để hoàn thành
   };
 
   return (
@@ -47,51 +34,44 @@ const CreateOpportunity = ({ onCloseCreate, handleAddTask, columns, value }) => 
       >
         <IoIosClose />
       </span>
-      <h1 className="text-3xl text-[#4D648D] font-bold text-center my-[50px]">
+      <h1 className="text-3xl text-[#4D648D] font-bold text-center my-[30px]">
         CREATE OPPORTUNITY
       </h1>
-      <DialogBody className="space-y-5">
-        <InputCreate
-          type="text"
-          name="Name"
-          onChange={handleChange}
-          placeholder="Name"
-          className="InputCreate-create"
-          value={value}
-        />
-        <InputCreate
-          type="text"
-          name="Email"
-          onChange={handleChange}
-          placeholder="Email"
-          className="input-create"
-          value={value}
-        />
-        <InputCreate
-          type="text"
-          name="Phone"
-          onChange={handleChange}
-          placeholder="Phone"
-          className="input-create"
-          value={value}
-        />
-        <InputCreate
-          type="text"
-          name="Website"
-          onChange={handleChange}
-          placeholder="Website"
-          className="InputCreate-create"
-          value={value}
-        />
-        <InputCreate
-          type="text"
-          name="Address"
-          onChange={handleChange}
-          placeholder="Address"
-          className="InputCreate-create"
-          value={value}
-        />
-        <div className="flex gap-3 mt-10 ml-[50px]">
+      <DialogBody className="space-y-7 m-7">
+        <InputCreate name="name" onChange={handleChange} value={taskData?.name} />
+        <InputCreate name="email" onChange={handleChange} value={taskData?.email} />
+        <InputCreate name="phone" onChange={handleChange} value={taskData?.phone} />
+        <InputCreate name="website" onChange={handleChange} value={taskData?.website} />
+        <InputCreate name="address" onChange={handleChange} value={taskData?.address} />
+        <div className="flex mt-3">
+          <InputCreate
+            name="Expected Revenue"
+            onChange={handleChange}
+            value={taskData?.revenue}
+            className="flex flex-col text-start justify-start items-start w-[60%]"
+          />
+          <div className="w-40 gap-4 items-center ml-[50px]">
+            <h1 className="font-bold mt-2 text-[#4D648D]">Stage</h1>
+            <Select
+              variant="standard"
+              className="!h-5 !p-4 text-base text-black"
+              animate={{
+                mount: { y: 0 },
+                unmount: { y: 25 },
+              }}
+              onChange={(e) => dispatch(setTaskData({ ...taskData, stage: e.target.value }))}
+              name="stage"
+              value={taskData?.stage}
+            >
+              {stages.map((stage) => (
+                <Option key={stage} value={stage}>
+                  {stage}
+                </Option>
+              ))}
+            </Select>
+          </div>
+        </div>
+        <div className="flex gap-3 mt-10">
           <h1 className="font-bold text-[#4D648D]">Customer</h1>
           <Switch
             id="custom-switch-component"
@@ -101,33 +81,11 @@ const CreateOpportunity = ({ onCloseCreate, handleAddTask, columns, value }) => 
               className: 'w-10 h-5',
             }}
             circleProps={{
-              className: 'before:hidden left-0 border-none',
+              className: 'before:hidden left-0.5 rigth-0.5 border-none',
             }}
-            checked={taskData.customer}
-            onChange={(e) => setTaskData({ ...taskData, customer: e.target.checked })}
+            checked={taskData?.customer}
+            onChange={(e) => dispatch(setTaskData({ ...taskData, customer: e.target.checked }))}
           />
-        </div>
-        <div className="w-40 flex gap-4 items-center ml-[50px]">
-          <h1 className="font-bold mt-2 text-[#4D648D]">Stage</h1>
-          <Select
-            variant="standard"
-            className="!h-7 !p-4 text-base text-black"
-            animate={{
-              mount: { y: 0 },
-              unmount: { y: 25 },
-            }}
-            onChange={(e) => setTaskData({ ...taskData, stage: e.target.value })}
-            name="stage"
-          >
-            <Option disabled value="">
-              Select Stage
-            </Option>
-            {Object.keys(columns).map((column) => (
-              <Option key={column} value={column}>
-                {column}
-              </Option>
-            ))}
-          </Select>
         </div>
       </DialogBody>
       <DialogFooter className="flex justify-center items-center gap-5">
@@ -139,9 +97,12 @@ const CreateOpportunity = ({ onCloseCreate, handleAddTask, columns, value }) => 
         </button>
         <button
           onClick={handleSave}
-          className="bg-[#4D648D] py-1 px-4 rounded-[5px] text-white text-lg text-center flex justify-center"
+          className={`bg-[#4D648D] py-1 px-4 rounded-[5px] text-white text-lg text-center flex justify-center ${
+            loading ? 'opacity-50 cursor-not-allowed' : ''
+          }`}
+          disabled={loading}
         >
-          Save
+          {loading ? 'Saving...' : 'Save'}
         </button>
       </DialogFooter>
     </Dialog>
