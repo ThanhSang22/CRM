@@ -15,6 +15,7 @@ const CustomInput = ({
   errors,
   className,
   classNameIcon,
+  onChange,
 }) => {
   const [showPass, setShowPass] = useState(false);
 
@@ -29,7 +30,7 @@ const CustomInput = ({
           </span>
         )}
         <input
-          onChange={(e) => setName(e.target.value)}
+          onChange={onChange || ((e) => setName(e.target.value))}
           id={id}
           name={name}
           type={type || (!showPass ? 'password' : 'text')}

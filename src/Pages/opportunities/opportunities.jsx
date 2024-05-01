@@ -1,5 +1,5 @@
 import React from 'react';
-import DefaultLayout from '../../defaultLayout/defaultLayout';
+import DefaultLayout from '../defaultLayout/defaultLayout';
 import OpportunityTags from './components/opportunityTags';
 
 const Opportunities = () => {

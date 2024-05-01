@@ -8,12 +8,13 @@ import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogBody } from '@material-tailwind/react';
 import logo from '../../assets/images/logo.png';
 import Notice from './notice';
+import auth from '../../features/auth/api';
 
 const forgotPasswordSchema = yup.object().shape({
   email: yup.string().required('*Invalid email'),
 });
 
-const ForgotPassword = ({ onClose, className }) => {
+const ForgotPassword = ({ onClose }) => {
   const [notice, setNotice] = useState(false);
   const [email, setEmail] = useState('');
 
@@ -27,15 +28,25 @@ const ForgotPassword = ({ onClose, className }) => {
 
   const navigate = useNavigate();
 
-  const onSubmit = (data) => {
-    console.log(data);
-    navigate(onClose);
+  const onSubmit = async (data) => {
+    try {
+      const response = await auth.resetPass(data);
+
+      if (response) {
+        navigate(onClose);
+        setNotice(true);
+      } else {
+        throw new Error('Reset password request failed');
+      }
+    } catch (error) {
+      console.error('Error resetting password:', error);
+    }
   };
 
   return (
     <>
       <Dialog
-        open={onClose}
+        open={true}
         handler={onClose}
         className="w-[580px] space-y-10 py-6 px-[50px] bg-white rounded-[10px] flex flex-col justify-between"
       >
@@ -70,7 +81,7 @@ const ForgotPassword = ({ onClose, className }) => {
               className="!placeholder:text-[#000000] !px-4 !h-[50px] mb-[10px] !text-[17px]"
             />
             <button
-              onClick={() => setNotice(true)}
+              // onClick={() => setNotice(true)}
               className="bg-[#4D648D] py-2 px-6 rounded-[5px] text-white text-lg text-center mt-[40px] flex justify-center m-auto"
             >
               Continue

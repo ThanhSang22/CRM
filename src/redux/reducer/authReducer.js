@@ -2,6 +2,25 @@ import { LOGIN_SUCCESS, LOGIN_FAILURE, LOGOUT } from '../action/auth';
 
 const initialState = {
   token: localStorage.getItem('token') || '',
+  user: {
+    id: '',
+    firstname: '',
+    lastname: '',
+    fullname: '',
+    email: '',
+    phone: '',
+    birthday: '',
+    gender: '',
+    username: '',
+    roles: [],
+    avatar: {
+      id: '',
+      name: '',
+      type: '',
+      physicalPath: '',
+      is_template: false,
+    },
+  },
   error: '',
 };
 
@@ -10,7 +29,8 @@ const authReducer = (state = initialState, action) => {
     case LOGIN_SUCCESS:
       return {
         ...state,
-        token: action.payload,
+        user: action.payload.user,
+        token: action.payload.token,
         error: '',
       };
     case LOGIN_FAILURE:
@@ -22,7 +42,7 @@ const authReducer = (state = initialState, action) => {
     case LOGOUT:
       return {
         ...state,
-        token: '',
+        token: localStorage.removeItem('token'),
         error: '',
       };
     default:

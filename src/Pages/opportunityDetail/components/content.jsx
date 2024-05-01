@@ -3,15 +3,35 @@ import InputCreate from '../../../components/inputCreate';
 import { Button, Rating, Switch } from '@material-tailwind/react';
 import { MdEmail, MdOutlineOpenInNew } from 'react-icons/md';
 import { GrAdd } from 'react-icons/gr';
-import board from '../../../features/board/api';
 import opportunities from '../../../features/opportunities';
+import { useSelector } from 'react-redux';
 
 const Content = () => {
-  const [anOpportunity, setAnOpportunity] = useState({});
+  const allOpp = useSelector((state) => state.opportunity.opportunities);
+
+  const [anOpportunity, setAnOpportunity] = useState({
+    name: '',
+    company: '',
+    email: '',
+    phone: '',
+    address: '',
+    website: '',
+    description: '',
+    revenue: 0,
+    priority: null,
+    probability: null,
+    lostReason: null,
+    stage: {
+      name: 'QUALIFIED',
+      revenue: 0,
+    },
+    salesperson: null,
+    customer: false,
+  });
   useEffect(() => {
     const getData = async () => {
       try {
-        const getAnOpp = await opportunities.getAnOpp();
+        const getAnOpp = await opportunities.getAnOpp('1c793647-e4e5-49b1-beaa-f5060c96477b');
 
         console.log('check-getOpportunities-', getAnOpp);
 
@@ -22,7 +42,13 @@ const Content = () => {
     };
 
     getData();
-  }, [anOpportunity]);
+  }, []);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setAnOpportunity({ ...anOpportunity, [name]: value });
+  };
+
   return (
     <div className="bg-white border-[0.5px] border-[#8E8E8E] rounded-[20px] mt-5 py-8 pb-[200px]">
       <div className="px-14">
@@ -34,26 +60,29 @@ const Content = () => {
         <div className="flex w-[40%] gap-16 mt-10">
           <InputCreate
             name="Expected Revenue"
-            value={anOpportunity.revenue}
+            value={anOpportunity.stage?.revenue}
+            onChange={handleChange}
             className="flex flex-col text-start justify-start items-start w-[60%]"
           >
             <p className="text-black font-semibold ">VND</p>
           </InputCreate>
           <InputCreate
             name="Probability"
+            onChange={handleChange}
+            value={anOpportunity.probability}
             className="flex flex-col text-start justify-start items-start w-[60%]"
           >
             <p className="text-black font-semibold ">%</p>
           </InputCreate>
         </div>
         <div className="grid grid-cols-2 gap-6 gap-x-16 mt-10">
-          <InputCreate name="Company" value={anOpportunity.company} />
-          <InputCreate name="address" value={anOpportunity.address} />
-          <InputCreate name="email" value={anOpportunity.email}>
+          <InputCreate name="company" value={anOpportunity.company} onChange={handleChange} />
+          <InputCreate name="address" value={anOpportunity.address} onChange={handleChange} />
+          <InputCreate name="email" value={anOpportunity.email} onChange={handleChange}>
             <MdEmail size={25} className="text-[#4D648D]" />
           </InputCreate>
-          <InputCreate name="website" value={anOpportunity.website} />
-          <InputCreate name="phone" value={anOpportunity.phone} />
+          <InputCreate name="website" value={anOpportunity.website} onChange={handleChange} />
+          <InputCreate name="phone" value={anOpportunity.phone} onChange={handleChange} />
           <div className="flex gap-4">
             <h1 className="font-bold text-[#4D648D]">Customer</h1>
             <Switch
@@ -68,7 +97,11 @@ const Content = () => {
               }}
             />
           </div>
-          <InputCreate name="salesperson" value={anOpportunity.salesperson} />
+          <InputCreate
+            name="salesperson"
+            value={anOpportunity.salesperson}
+            onChange={handleChange}
+          />
           <div className="flex gap-7">
             <h1 className="font-bold text-[#4D648D]">Priority</h1>
             <Rating count={3} />

@@ -4,45 +4,40 @@ import { Avatar, Checkbox } from '@material-tailwind/react';
 import avatar from '../../../assets/images/avatar.png';
 import Paging from '../../../components/paging';
 import Tools from './tools';
-import users from '../../../features/user';
+import { useDispatch, useSelector } from 'react-redux';
+import { getUsers, getAllUsers } from '../../../redux/slice/usersSlice.js';
 
 const titles = ['Name', 'Email', 'Mobile', 'Birthday', 'Gender', 'Role'];
 
 const UserTags = () => {
-  const [allUsers, setAllUsers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
 
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        const res = await users.getUsers(currentPage - 1);
-        console.log('check-------', res);
-        setAllUsers(res);
-      } catch (error) {
-        console.log(error.message);
-      }
-    };
+  const dispatch = useDispatch();
+  const allUsers = useSelector((state) => state.users.users);
+  console.log();
 
-    getData();
+  useEffect(() => {
+    dispatch(getUsers(currentPage));
   }, [currentPage]);
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
+    dispatch(getAllUsers(pageNumber));
   };
 
   return (
     <>
       <div className="flex justify-between text-[#4D648D]">
         <h1 className="text-slate-500 text-3xl font-semibold">User</h1>
-        <p className="text-slate-500 text-base font-normal ">Total users: {allUsers.totalItems}</p>
+        <p className="text-slate-500 text-base font-normal ">Total users: {allUsers?.totalItems}</p>
       </div>
       <div className="flex justify-between mt-8 mb-2">
         <Tools />
         <Paging
           currentPage={currentPage}
           setCurrentPage={handlePageChange}
-          totalOpportunities={allUsers.totalItems}
-          totalPages={allUsers.totalPages}
+          totalOpportunities={allUsers?.totalItems}
+          totalPages={allUsers?.totalPages}
         />
       </div>
       <div
@@ -73,7 +68,7 @@ const UserTags = () => {
           );
         })}
       </div>
-      {allUsers.users?.map((user, u) => {
+      {allUsers?.users?.map((user, u) => {
         const roleString = user.roles.join();
         const role = roleString.slice(5).toLowerCase();
 

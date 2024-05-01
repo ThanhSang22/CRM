@@ -21,8 +21,8 @@ const Notice = ({ onNotice, mail }) => {
       <DialogBody>
         <p className="text-center">
           We have sent a new password to your email{' '}
-          <i className="text-[#4D648D] whitespace-nowrap font-semibold">example@gmail.com.</i>{' '}
-          Please using this new password to sign in.
+          <i className="text-[#4D648D] whitespace-nowrap font-semibold">{mail}.</i> Please using
+          this new password to sign in.
         </p>
       </DialogBody>
       <DialogFooter>

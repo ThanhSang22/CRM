@@ -1,40 +1,36 @@
-// reducer.js
-import { SET_TASK_DATA, CLEAR_TASK_DATA, SET_LOADING } from '../constants/opportunityConstants';
+import * as types from '../constants/opportunityConstants';
 
 const initialState = {
-  taskData: {
-    name: '',
-    email: '',
-    phone: '',
-    website: '',
-    address: '',
-    revenue: '',
-    stage: '',
-    customer: false,
-  },
+  opportunities: [],
   loading: false,
+  error: '',
 };
 
-const createOpportunityReducer = (state = initialState, action) => {
+const opportunityReducer = (state = initialState, action) => {
   switch (action.type) {
-    case SET_TASK_DATA:
+    case types.SET_LOADING:
       return {
         ...state,
-        taskData: action.payload,
+        loading: true,
       };
-    case CLEAR_TASK_DATA:
+    case types.FETCH_OPPORTUNITIES:
       return {
         ...state,
-        taskData: initialState.taskData,
+        loading: false,
+        opportunities: action.payload,
+        error: '',
       };
-    case SET_LOADING:
+    case types.ADD_OPPORTUNITY:
       return {
         ...state,
-        loading: action.payload,
+        loading: false,
+        opportunities: [...state.opportunities, action.payload],
+        // newOpportunity: { ...state.newOpportunity },
+        error: '',
       };
     default:
       return state;
   }
 };
 
-export default createOpportunityReducer;
+export default opportunityReducer;

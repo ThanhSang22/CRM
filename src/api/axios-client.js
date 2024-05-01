@@ -1,10 +1,10 @@
 import axios from 'axios';
 
-// const URL_DB = 'https://reqres.in';
-const URL_DB = 'http://192.168.199.242:8080';
+// const URL = 'http://192.168.199.242:8080';
+const URL = 'http://localhost:8080';
 
 const axiosClient = axios.create({
-  baseURL: URL_DB,
+  baseURL: URL,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -37,11 +37,11 @@ axiosClient.interceptors.response.use(
   function (error) {
     // Any status codes that falls outside the range of 2xx cause this function to trigger
     // Do something with response error
-    if (error.response?.status === 401) {
-      // clear token ...
-      localStorage.removeItem('token');
-      window.location.replace('/');
-    }
+    // if (error.response?.status === 401) {
+    //   // clear token ...
+    //   localStorage.removeItem('token');
+    //   window.location.replace('/');
+    // }
 
     return Promise.reject(error);
   },

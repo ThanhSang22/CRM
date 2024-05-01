@@ -2,28 +2,23 @@ import React, { useEffect, useState } from 'react';
 import { Checkbox } from '@material-tailwind/react';
 import Tools from './tools';
 import Paging from '../../../components/paging';
-import contacts from '../../../features/contact';
+import { useDispatch, useSelector } from 'react-redux';
+import { getContacts, getAllContacts } from '../../../redux/slice/contactSlice';
 
 const titles = ['Name', 'Job position', 'Email', 'Mobile', 'Birthday', 'Gender'];
 const ContactTags = () => {
-  const [allContacts, setAllContacts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const dispatch = useDispatch();
+  const allContacts = useSelector((state) => state.contact.contacts);
 
   useEffect(() => {
-    const getData = async () => {
-      try {
-        const res = await contacts.getContacts(currentPage - 1);
-        setAllContacts(res);
-      } catch (error) {
-        console.log(error.message);
-      }
-    };
-
-    getData();
+    dispatch(getContacts(currentPage));
+    // dispatch(fetchOpportunities(currentPage));
   }, [currentPage]);
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
+    dispatch(getAllContacts(pageNumber));
   };
 
   return (
@@ -31,7 +26,7 @@ const ContactTags = () => {
       <div className="flex justify-between text-[#4D648D]">
         <h1 className="text-slate-500 text-3xl font-semibold">Contacts</h1>
         <p className="text-slate-500 text-base font-normal ">
-          Total contacts: {allContacts.totalItems}
+          Total contacts: {allContacts?.totalItems}
         </p>
       </div>
       <div className="flex justify-between mt-8 mb-2">
@@ -39,8 +34,8 @@ const ContactTags = () => {
         <Paging
           currentPage={currentPage}
           setCurrentPage={handlePageChange}
-          totalOpportunities={allContacts.totalItems}
-          totalPages={allContacts.totalPages}
+          totalOpportunities={allContacts?.totalItems}
+          totalPages={allContacts?.totalPages}
         />
       </div>
       <div
@@ -71,7 +66,7 @@ const ContactTags = () => {
           );
         })}
       </div>
-      {allContacts.contacts?.map((contact, index) => {
+      {allContacts?.contacts?.map((contact, index) => {
         const birthday = contact.birthday?.substr(0, 10);
         return (
           <div

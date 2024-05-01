@@ -10,27 +10,29 @@ import { logout } from '../../../redux/action/auth';
 import ChangePassword from '../../kanban/components/changePassword';
 import { Link } from 'react-router-dom';
 import auth from '../../../features/auth/api';
-import SignIn from '../../SignIn/SignIn';
 
 const Header = () => {
   const [showChangePass, setShowChangePass] = useState(false);
   const dispatch = useDispatch();
   const [user, setUser] = useState({});
   const token = useSelector((state) => state.auth.token);
+  console.log('token====', token);
+  const users = useSelector((state) => state.auth.user);
+  console.log('user====', users);
 
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        const res = await auth.getUser();
-        // console.log('check-user---', res);
-        setUser(res);
-      } catch (error) {
-        console.log(error.message);
-      }
-    };
+  // useEffect(() => {
+  //   const getData = async () => {
+  //     try {
+  //       const res = await auth.login();
+  //       console.log('check-user---', res);
+  //       setUser(res);
+  //     } catch (error) {
+  //       console.log(error.message);
+  //     }
+  //   };
 
-    getData();
-  }, []);
+  //   getData();
+  // }, []);
 
   const roleString = user.roles?.join();
   const role = roleString?.slice(5).toLowerCase();
@@ -42,7 +44,6 @@ const Header = () => {
 
   return (
     <>
-      {/* {token ? ( */}
       <>
         <div className="h-[80px] bg-white border-[0.5px] border-b-[#8E8E8E] flex px-5 justify-between">
           <div className=" space-x-3 flex items-center text-[#4D648D]">
@@ -54,12 +55,7 @@ const Header = () => {
             <p>Lorem ipsum dolor sit amet</p>
           </div>
           <div className="flex gap-2 items-center z-50">
-            <Avatar
-              // src={'192.168.199.242:8080' + user.avatar?.physicalPath}
-              src="//192.168.199.242:8080/D:/crm/uploads/avatars/20240422142240192_spring.jpg"
-              alt="avatar"
-              size="sm"
-            />
+            <Avatar src={user.avatar?.physicalPath || avatar} alt="avatar" size="sm" />
             <Menu as="div" className="relative inline-block text-left">
               <div>
                 <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-md text-sm">
@@ -107,22 +103,20 @@ const Header = () => {
                         </button>
                       )}
                     </Menu.Item>
-                    <form method="POST" action="#">
-                      <Menu.Item>
-                        {({ active }) => (
-                          <button
-                            type="submit"
-                            className={classNames(
-                              active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-                              'block w-full px-4 py-2 text-left text-sm',
-                            )}
-                            onClick={handleLogout}
-                          >
-                            Sign out
-                          </button>
-                        )}
-                      </Menu.Item>
-                    </form>
+                    <Menu.Item>
+                      {({ active }) => (
+                        <button
+                          type="submit"
+                          className={classNames(
+                            active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
+                            'block w-full px-4 py-2 text-left text-sm',
+                          )}
+                          onClick={handleLogout}
+                        >
+                          Sign out
+                        </button>
+                      )}
+                    </Menu.Item>
                   </div>
                 </Menu.Items>
               </Transition>
@@ -136,9 +130,6 @@ const Header = () => {
           />
         )}
       </>
-      {/* ) : (
-        <SignIn />
-      )} */}
     </>
   );
 };
