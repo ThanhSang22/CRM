@@ -12,7 +12,7 @@ const CreateContact = ({ onContact }) => {
         <IoIosClose />
       </span>
       <h1 className="text-3xl text-[#4D648D] font-bold text-center my-[30px]">CREATE CONTACT</h1>
-      <DialogBody className="space-y-6 px-20 xl:px-10">
+      <DialogBody className="space-y-6 px-16 xl:px-10">
         <InputCreate
           name="Opportunity"
           className="after:content-['*'] after:ml-0.5 after:text-red-500"
@@ -35,7 +35,7 @@ const CreateContact = ({ onContact }) => {
           <InputCreate
             type="date"
             name="Birthday"
-            className="after:content-['*'] after:ml-0.5 after:text-red-500 w-[120px]"
+            className="after:content-['*'] after:ml-0.5 after:text-red-500 w-[150px]"
           />
           <div className="w-40 flex gap-4 items-center ml-[20px]">
             <h1 className="font-bold mt-2 text-[#4D648D] after:content-['*'] after:ml-0.5 after:text-red-500">

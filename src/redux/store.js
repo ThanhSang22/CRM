@@ -1,13 +1,18 @@
-import { createStore, combineReducers, applyMiddleware } from 'redux';
-import authReducer from './reducer/authReducer';
-import createOpportunityReducer from './reducer/opportunityReducer';
-import { thunk } from 'redux-thunk';
+import authReducer from './slice/authSlice';
+import usersReducer from './slice/usersSlice';
+import contactsReducer from './slice/contactSlice';
+import opportunityReducer from './slice/opportunitySlice';
+import { configureStore } from '@reduxjs/toolkit';
+import logger from 'redux-logger';
 
-const rootReducer = combineReducers({
-  auth: authReducer,
-  opportunity: createOpportunityReducer,
+const store = configureStore({
+  reducer: {
+    auth: authReducer,
+    users: usersReducer,
+    contact: contactsReducer,
+    opportunity: opportunityReducer,
+  },
+  middleware: (getDefaultMiddleware) => [...getDefaultMiddleware(), logger],
 });
-
-const store = createStore(rootReducer, applyMiddleware(thunk));
 
 export default store;

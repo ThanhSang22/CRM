@@ -4,7 +4,7 @@ import { MdOutlineAccessTimeFilled } from 'react-icons/md';
 import { Avatar, Dialog, DialogBody, Rating } from '@material-tailwind/react';
 import party from '../../../assets/images/party.png';
 import board from '../../../features/board/api';
-import AddOpportunity from '../../createOpportunity/abc';
+import AddOpportunity from '../../createOpportunity/addOpportunity';
 import HeaderBoard from './header-board';
 import { Link } from 'react-router-dom';
 
@@ -18,10 +18,7 @@ function Board() {
     const getData = async () => {
       try {
         const getStageData = await board.getStage();
-        const getOpportunities = await board.getOpportunitiesStage();
-
-        console.log('check-stage--', getStageData);
-        console.log('check-getOpportunities-', getOpportunities);
+        const getOpportunities = await board.getOpportunitiesAll();
 
         // Kiểm tra xem res có phải là mảng không
         if (Array.isArray(getStageData, getOpportunities)) {
@@ -63,19 +60,14 @@ function Board() {
         stage: { id: destination.droppableId },
       };
 
-      // Cập nhật danh sách cơ hội của cột nguồn
-      const updatedSourceOpportunities = sourceOpportunities.filter(
-        (opportunity) => opportunity.id !== draggedOpportunity.id,
-      );
-
-      // Cập nhật danh sách cơ hội của cột đích
+      // Cập nhật danh sách cơ hội với opportunity mới được kéo thả
       const updatedDestinationOpportunities = [
         ...opportunities.filter((opportunity) => opportunity.id !== draggedOpportunity.id),
         updatedDraggedOpportunity,
       ];
 
       // Cập nhật state
-      setOpportunities([...updatedSourceOpportunities, ...updatedDestinationOpportunities]);
+      setOpportunities(updatedDestinationOpportunities);
     } else {
       // Di chuyển opportunity trong cùng một cột
       const updatedOpportunities = [...sourceOpportunities];
@@ -99,13 +91,12 @@ function Board() {
     }
   };
 
-  const toggleCreatingOpportunity = () => {
-    setIsCreatingOpportunity(!isCreatingOpportunity);
-  };
-
-  const handleAddOpportunity = (newOpportunity) => {
+  const toggleCreatingOpportunity = (newOpportunity) => {
+    setIsCreatingOpportunity((prevState) => !prevState);
     setOpportunities([...opportunities, newOpportunity]);
   };
+
+  const handleAddOpportunity = (newOpportunity) => {};
 
   return (
     <>
@@ -122,8 +113,14 @@ function Board() {
                       ref={provided.innerRef}
                       className={`m-3 w-[310px] max-h-[900px] min-h-[600px] ${snapshot.isDraggingOver ? ' bg-light-blue-50' : ''}`}
                     >
-                      <div className="group/item sticky z-10 top-0 flex justify-between pr-2 bg-[#f5eeee]">
+                      <div className="sticky z-10 top-0 pr-2 bg-[#f5eeee]">
                         <h1 className="p-3 font-bold">{stage.name}</h1>
+                        <div className="pl-2 flex justify-between w-full items-center">
+                          <hr
+                            className={`${stage.revenue <= 5 ? 'border-[#D0E1F9] max-w-[50px]' : stage.revenue <= 10 ? 'border-[#A1D6E2] max-w-[110px]' : 'border-[#68829E] w-[180px]'} border-b-[10px]`}
+                          />
+                          <p className=" whitespace-nowrap">{stage.revenue} B</p>
+                        </div>
                       </div>
 
                       {opportunities.map((opportunity, index) => {
@@ -141,7 +138,7 @@ function Board() {
                                   {...provided.dragHandleProps}
                                   className={`${snapshot.isDragging ? 'bg-[#F2D7D5]' : 'bg-[#ffffff]'} p-3 border-[0.3px] border-[#000000] space-y-2`}
                                 >
-                                  <Link to={`/opportunity-detail`}>
+                                  <Link to={`/opportunities/${opportunity.id}`}>
                                     <div className="flex justify-between items-center">
                                       <h1 className="text-lg font-medium">{opportunity.name}</h1>
                                       <MdOutlineAccessTimeFilled className="text-[#8E8E8E] text-3xl" />
@@ -173,7 +170,12 @@ function Board() {
           </div>
         </DragDropContext>
         {isCreatingOpportunity && (
-          <AddOpportunity onClose={toggleCreatingOpportunity} onAdd={handleAddOpportunity} />
+          <AddOpportunity
+            onClose={toggleCreatingOpportunity}
+            onAdd={handleAddOpportunity}
+            stages={stages}
+          />
+          // <CreateOpportunity onCloseCreate={toggleCreatingOpportunity} stages={stages} />
         )}
 
         {/* Modal chúc mừng */}

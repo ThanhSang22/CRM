@@ -4,6 +4,7 @@ import { IoIosAdd } from 'react-icons/io';
 import { LuFileInput } from 'react-icons/lu';
 import { RiDeleteBin6Line } from 'react-icons/ri';
 import CreateOpportunity from '../../createOpportunity/createOpportunity';
+import AddOpportunity from '../../createOpportunity/addOpportunity';
 
 const Tools = () => {
   const [onCreate, setOnCreate] = useState(false);
@@ -30,7 +31,7 @@ const Tools = () => {
           Delete
         </button>
       </div>
-      {onCreate && <CreateOpportunity onCloseCreate={false} />}
+      {onCreate && <AddOpportunity onClose={!onCreate} />}
     </>
   );
 };

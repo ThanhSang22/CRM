@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -10,14 +10,15 @@ import { HiOutlineLockClosed } from 'react-icons/hi2';
 import 'react-toastify/dist/ReactToastify.css';
 import CustomInput from '../../components/customInput';
 import { ToastContainer, toast } from 'react-toastify';
-import auth from '../../features/auth/api';
 import ForgotPassword from '../forgotPassword/forgotPassword';
-import { useDispatch } from 'react-redux';
-import { loginSuccess } from '../../redux/action/auth';
+import { useDispatch, useSelector } from 'react-redux';
+import { loginUser } from '../../redux/slice/authSlice';
 
 const loginSchema = yup.object().shape({
   username: yup.string().required('*Invalid username'),
   password: yup.string().required('*Invalid password'),
+  // username: yup.string().required('Please enter username').email('*Invalid username'),
+  // password: yup.string().required('Required').password('*Invalid password'),
 });
 
 const SignIn = () => {
@@ -35,26 +36,31 @@ const SignIn = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const authState = useSelector((state) => state.auth);
 
-  const handleLogin = async (payload) => {
-    try {
-      const res = await auth.login(payload);
-      if (res) {
-        // Save token to local storage
-        localStorage.setItem('token', res.token);
-        // Dispatch login action
-        dispatch(loginSuccess(res.token));
-        toast.success('Login successfully');
-        navigate('/kanban-board');
-      }
-    } catch (error) {
-      toast.error(`Login Failed due to ${error.message}`);
-    }
-  };
+  console.log('loafing:' + authState.loading);
+  if (authState.userLogin != null) {
+    navigate('/kanban-board');
+  }
+  // const handleLogin = async (payload) => {
+  //   try {
+  //     const res = await auth.login(payload);
+  //     if (res) {
+  //       // Save token to local storage
+  //       localStorage.setItem('token', res.token);
+  //       // Dispatch login action
+  //       dispatch(loginSuccess(res.token));
+  //       navigate('/kanban-board');
+  //     }
+  //   } catch (error) {
+  //     toast.error(`Login Failed due to ${error.message}`);
+  //   }
+  // };
+
+  const inputRef = useRef();
 
   const onSubmit = (data) => {
-    console.log(data);
-    handleLogin(data);
+    dispatch(loginUser(data));
   };
 
   return (
@@ -63,7 +69,7 @@ const SignIn = () => {
       <div className="w-[50%] flex flex-col items-center py-[65px] md:px-0 px-10">
         <div className="space-y-3">
           <h1 className="text-white lg:text-5xl leading-9 tracking-tight text-start font-semibold text-4xl">
-            Connect and Enhance
+            Connect and Enhance {authState.loading && <p>Loading</p>}
           </h1>
           <h1 className="text-white lg:text-5xl leading-9 tracking-tight text-start font-semibold text-4xl">
             Customer Relationships
@@ -78,7 +84,7 @@ const SignIn = () => {
           SIGN IN
         </h1>
         <div className="mt-[70px] sm:mx-auto sm:w-full sm:max-w-lg">
-          <form action="#" method="POST" onSubmit={handleSubmit(onSubmit)}>
+          <form action="#" onSubmit={handleSubmit(onSubmit)}>
             <CustomInput
               icon1={<FaRegUser />}
               id={'username'}

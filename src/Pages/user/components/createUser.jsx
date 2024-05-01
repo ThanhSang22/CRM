@@ -1,9 +1,39 @@
-import React from 'react';
+import React, { useState } from 'react';
 import InputCreate from '../../../components/inputCreate';
 import { Dialog, DialogBody, DialogFooter, Option, Select } from '@material-tailwind/react';
 import { IoIosClose } from 'react-icons/io';
+import users from '../../../features/user';
 
 const CreateUser = ({ onUser }) => {
+  const [addNewUser, setAddNewUser] = useState({
+    firstname: '',
+    lastname: '',
+    fullname: '',
+    email: '',
+    phone: '',
+    birthday: '',
+    gender: '',
+    username: '',
+    password: '',
+    role: [],
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setAddNewUser({ ...addNewUser, [name]: value });
+    console.log('====', addNewUser);
+  };
+
+  const handleAddUser = async () => {
+    try {
+      // Gọi API để thêm opportunity
+      const addedUser = await users.addUser(addNewUser);
+      console.log('=====', addedUser);
+      onUser();
+    } catch (error) {
+      console.error('Error adding opportunity:', error);
+    }
+  };
   return (
     <Dialog open={true} handler={onUser} className="py-4">
       <span
@@ -15,29 +45,54 @@ const CreateUser = ({ onUser }) => {
       <h1 className="text-3xl text-[#4D648D] font-bold text-center my-[30px]">CREATE USER</h1>
       <DialogBody className="space-y-6 px-20 xl:px-10">
         <InputCreate
-          name="Frist Name"
+          name="firstname"
+          value={addNewUser.firstname}
+          onChange={handleChange}
           className="after:content-['*'] after:ml-0.5 after:text-red-500"
         />
         <InputCreate
-          name="Last Name"
+          name="lastname"
+          value={addNewUser.lastname}
+          onChange={handleChange}
           className="after:content-['*'] after:ml-0.5 after:text-red-500"
         />
-        <InputCreate name="Email" className="after:content-['*'] after:ml-0.5 after:text-red-500" />
-        <InputCreate name="Phone" className="after:content-['*'] after:ml-0.5 after:text-red-500" />
+        <InputCreate
+          value={addNewUser.email}
+          name="email"
+          onChange={handleChange}
+          className="after:content-['*'] after:ml-0.5 after:text-red-500"
+        />
+        <InputCreate
+          name="phone"
+          onChange={handleChange}
+          value={addNewUser.phone}
+          className="after:content-['*'] after:ml-0.5 after:text-red-500"
+        />
         <div className="flex justify-between">
           <InputCreate
             type="date"
-            name="Birthday"
+            name="birthday"
+            value={addNewUser.birthday}
+            onChange={handleChange}
             className="after:content-['*'] after:ml-0.5 after:text-red-500 w-[120px]"
           />
-          <div className="w-40 flex gap-4 items-center ml-[20px]">
-            <h1 className="font-bold mt-2 text-[#4D648D] after:content-['*'] after:ml-0.5 after:text-red-500">
+          <div className="w-72 flex gap-4 items-center ml-[20px]">
+            <h1 className="font-bold text-[#4D648D] after:content-['*'] after:ml-0.5 after:text-red-500">
               Gender
             </h1>
-            <select className="text-base text-black w-[100px] mt-2 border-b-[0.3px] border-b-black outline-none">
-              <option>Female</option>
-              <option>Male</option>
-            </select>
+            <div className="w-40">
+              <Select
+                size="lg"
+                variant="standard"
+                className="text-base text-black w-[100px] mt-2 border-b-[0.3px] border-b-black outline-none !h-5 !p-5"
+                name="gender"
+                value={addNewUser.gender}
+                onChange={(gender) => setAddNewUser({ ...addNewUser, gender })}
+              >
+                <Option value="female">Female</Option>
+                <Option value="male">Male</Option>
+              </Select>
+            </div>
           </div>
         </div>
         <div className="flex justify-center items-center gap-2">
@@ -48,11 +103,15 @@ const CreateUser = ({ onUser }) => {
           <hr className="border-[0.2px] border-b-[#000000] w-full" />
         </div>
         <InputCreate
-          name="Username"
+          name="username"
+          value={addNewUser.username}
+          onChange={handleChange}
           className="after:content-['*'] after:ml-0.5 after:text-red-500"
         />
         <InputCreate
-          name="Password"
+          name="password"
+          value={addNewUser.password}
+          onChange={handleChange}
           className="after:content-['*'] after:ml-0.5 after:text-red-500"
         />
         <div className="w-40 flex gap-4 items-center">
@@ -67,9 +126,11 @@ const CreateUser = ({ onUser }) => {
               unmount: { y: 25 },
             }}
             name="role"
+            value={addNewUser.role}
+            onChange={(role) => setAddNewUser({ ...addNewUser, role: [role] })}
           >
-            <Option>User</Option>
-            <Option>Admin</Option>
+            <Option value="User">User</Option>
+            <Option value="Admin">Admin</Option>
           </Select>
         </div>
       </DialogBody>
@@ -80,7 +141,10 @@ const CreateUser = ({ onUser }) => {
         >
           Cancel
         </button>
-        <button className="bg-[#4D648D] py-1 px-4 rounded-[5px] text-white text-lg text-center flex justify-center">
+        <button
+          onClick={handleAddUser}
+          className="bg-[#4D648D] py-1 px-4 rounded-[5px] text-white text-lg text-center flex justify-center"
+        >
           Save
         </button>
       </DialogFooter>

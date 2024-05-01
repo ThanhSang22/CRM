@@ -1,11 +1,11 @@
 import React from 'react';
-import DefaultLayout from '../../defaultLayout/defaultLayout';
+import DefaultLayout from '../defaultLayout/defaultLayout';
 
 const Files = () => {
   return (
-    // <DefaultLayout>
-    <div>Files</div>
-    // </DefaultLayout>
+    <DefaultLayout>
+      <div>Files</div>
+    </DefaultLayout>
   );
 };
 
