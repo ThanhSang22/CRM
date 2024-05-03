@@ -7,22 +7,31 @@ import board from '../../../features/board/api';
 import AddOpportunity from '../../createOpportunity/addOpportunity';
 import HeaderBoard from './header-board';
 import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { getStage } from '../../../redux/slice/stageSlice';
+import { getOpportunitiesAll } from '../../../redux/slice/opportunitySlice';
 
 function Board() {
-  const [stages, setStages] = useState([]);
   const [opportunities, setOpportunities] = useState([]);
   const [showCongratsModal, setShowCongratsModal] = useState(false);
   const [isCreatingOpportunity, setIsCreatingOpportunity] = useState(false);
 
+  const dispatch = useDispatch();
+  const stages = useSelector((state) => state.stages.stages);
+  // const getOpportunities = useSelector((state) => state.opportunity.opportunities);
+
+  // console.log(getOpportunities);
+
   useEffect(() => {
+    dispatch(getStage());
+
+    // dispatch(getOpportunitiesAll());
     const getData = async () => {
       try {
-        const getStageData = await board.getStage();
         const getOpportunities = await board.getOpportunitiesAll();
 
         // Kiểm tra xem res có phải là mảng không
-        if (Array.isArray(getStageData, getOpportunities)) {
-          setStages(getStageData); // Gán kết quả vào stages nếu res là mảng
+        if (Array.isArray(getOpportunities)) {
           setOpportunities(getOpportunities);
         } else {
           console.error('Kết quả trả về không phải là một mảng');
@@ -34,6 +43,7 @@ function Board() {
 
     getData();
   }, []);
+
   const onDragEnd = (result) => {
     const { source, destination } = result;
 
@@ -47,11 +57,6 @@ function Board() {
 
     // Kiểm tra xem opportunity có được di chuyển sang cột mới hay không
     const isMovedToNewColumn = source.droppableId !== destination.droppableId;
-
-    // Lấy danh sách cơ hội từ cột nguồn
-    const sourceOpportunities = opportunities.filter(
-      (opportunity) => opportunity.stage.id === source.droppableId,
-    );
 
     if (isMovedToNewColumn) {
       // Cập nhật cột đích của opportunity
@@ -70,7 +75,7 @@ function Board() {
       setOpportunities(updatedDestinationOpportunities);
     } else {
       // Di chuyển opportunity trong cùng một cột
-      const updatedOpportunities = [...sourceOpportunities];
+      const updatedOpportunities = [...opportunities];
 
       // Loại bỏ opportunity khỏi vị trí cũ
       updatedOpportunities.splice(source.index, 1);
@@ -87,7 +92,7 @@ function Board() {
       setShowCongratsModal(true);
       setTimeout(() => {
         setShowCongratsModal(false);
-      }, 3000);
+      }, 2000);
     }
   };
 
@@ -96,35 +101,39 @@ function Board() {
     setOpportunities([...opportunities, newOpportunity]);
   };
 
-  const handleAddOpportunity = (newOpportunity) => {};
+  // stages?.sort((a, b) => {
+  //   return a.order - b.order;
+  // });
 
   return (
     <>
       <HeaderBoard toggleCreatingTask={toggleCreatingOpportunity} />
-      <div className="bg-[#D9D9D926] mx-5 rounded-t-3xl h-100vh p-2">
+      <div className="bg-[#D9D9D926] mx-5 rounded-t-3xl h-100vh px-2 overflow-scroll snap-y snap  snap-mandatory">
         <DragDropContext onDragEnd={onDragEnd}>
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            {stages.map((stage) => (
+          <div style={{ display: 'flex', justifyContent: 'space-between' }} className="w-[1398px]">
+            {stages?.map((stage) => (
               <React.Fragment key={stage.id}>
                 <Droppable droppableId={stage.id}>
                   {(provided, snapshot) => (
                     <div
                       {...provided.droppableProps}
                       ref={provided.innerRef}
-                      className={`m-3 w-[310px] max-h-[900px] min-h-[600px] ${snapshot.isDraggingOver ? ' bg-light-blue-50' : ''}`}
+                      className={`mx-3 w-[320px] max-h-[595px] ${snapshot.isDraggingOver ? ' bg-light-blue-50' : ''}`}
                     >
-                      <div className="sticky z-10 top-0 pr-2 bg-[#f5eeee]">
+                      <div className="sticky w-[320px] z-10 top-0 pr-2 bg-[#f5eeee] gap-1 flex justify-between items-center">
                         <h1 className="p-3 font-bold">{stage.name}</h1>
-                        <div className="pl-2 flex justify-between w-full items-center">
+                        <p className="whitespace-nowrap text-end">{stage.revenue} VND</p>
+
+                        {/* <div className="pl-2 flex justify-between w-full items-center">
                           <hr
                             className={`${stage.revenue <= 5 ? 'border-[#D0E1F9] max-w-[50px]' : stage.revenue <= 10 ? 'border-[#A1D6E2] max-w-[110px]' : 'border-[#68829E] w-[180px]'} border-b-[10px]`}
                           />
-                          <p className=" whitespace-nowrap">{stage.revenue} B</p>
-                        </div>
+                          <p className="whitespace-nowrap text-end">{stage.revenue} VND</p>
+                        </div> */}
                       </div>
 
-                      {opportunities.map((opportunity, index) => {
-                        if (opportunity.stage.id === stage.id) {
+                      {opportunities?.map((opportunity, index) => {
+                        if (opportunity?.stage?.id === stage?.id) {
                           return (
                             <Draggable
                               key={opportunity.id}
@@ -136,7 +145,7 @@ function Board() {
                                   ref={provided.innerRef}
                                   {...provided.draggableProps}
                                   {...provided.dragHandleProps}
-                                  className={`${snapshot.isDragging ? 'bg-[#F2D7D5]' : 'bg-[#ffffff]'} p-3 border-[0.3px] border-[#000000] space-y-2`}
+                                  className={`${snapshot.isDragging ? 'bg-[#F2D7D5]' : 'bg-[#ffffff]'} p-3 border-[0.3px] border-[#000000] space-y-2 w-[320px] `}
                                 >
                                   <Link to={`/opportunities/${opportunity.id}`}>
                                     <div className="flex justify-between items-center">
@@ -146,12 +155,14 @@ function Board() {
                                     <p>{opportunity.revenue} VND</p>
                                     <div className="flex justify-between items-center">
                                       <Rating count={3} />
-                                      <Avatar
-                                        src={opportunity.avatar?.physicalPath}
-                                        alt="avatar"
-                                        variant="rounded"
-                                        size="xs"
-                                      />
+                                      {opportunity.salesperson && (
+                                        <Avatar
+                                          src={`http://192.168.199.242:8080/avatars/${opportunity.salesperson?.avatar?.id}`}
+                                          alt="avatar"
+                                          variant="rounded"
+                                          size="xs"
+                                        />
+                                      )}
                                     </div>
                                   </Link>
                                   {provided.placeholder}
@@ -170,16 +181,15 @@ function Board() {
           </div>
         </DragDropContext>
         {isCreatingOpportunity && (
-          <AddOpportunity
-            onClose={toggleCreatingOpportunity}
-            onAdd={handleAddOpportunity}
-            stages={stages}
-          />
-          // <CreateOpportunity onCloseCreate={toggleCreatingOpportunity} stages={stages} />
+          <AddOpportunity onClose={toggleCreatingOpportunity} stages={stages} />
         )}
 
         {/* Modal chúc mừng */}
-        <Dialog open={showCongratsModal} onClose={() => setShowCongratsModal(false)}>
+        <Dialog
+          open={showCongratsModal}
+          handler={() => setShowCongratsModal(false)}
+          className="bg-none"
+        >
           <DialogBody className="flex gap-2 items-center justify-center">
             <img src={party} alt="" width={100} />
             <h1>

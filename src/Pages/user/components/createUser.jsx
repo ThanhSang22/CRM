@@ -3,8 +3,15 @@ import InputCreate from '../../../components/inputCreate';
 import { Dialog, DialogBody, DialogFooter, Option, Select } from '@material-tailwind/react';
 import { IoIosClose } from 'react-icons/io';
 import users from '../../../features/user';
+import Notice from '../../../components/notice';
+import Button from '../../../components/button';
+import { MdClose } from 'react-icons/md';
+import { FiSave } from 'react-icons/fi';
+import { useDispatch } from 'react-redux';
+import { addUser } from '../../../redux/slice/usersSlice';
 
 const CreateUser = ({ onUser }) => {
+  const [isNotice, setIsNotice] = useState(false);
   const [addNewUser, setAddNewUser] = useState({
     firstname: '',
     lastname: '',
@@ -14,7 +21,6 @@ const CreateUser = ({ onUser }) => {
     birthday: '',
     gender: '',
     username: '',
-    password: '',
     role: [],
   });
 
@@ -24,11 +30,18 @@ const CreateUser = ({ onUser }) => {
     console.log('====', addNewUser);
   };
 
-  const handleAddUser = async () => {
+  const dispatch = useDispatch();
+
+  const handleAddUser = async (payload) => {
+    // dispatch(addUser(payload));
     try {
       // Gọi API để thêm opportunity
       const addedUser = await users.addUser(addNewUser);
       console.log('=====', addedUser);
+      setIsNotice(true);
+      setTimeout(() => {
+        setIsNotice(false);
+      }, 2000);
       onUser();
     } catch (error) {
       console.error('Error adding opportunity:', error);
@@ -108,12 +121,6 @@ const CreateUser = ({ onUser }) => {
           onChange={handleChange}
           className="after:content-['*'] after:ml-0.5 after:text-red-500"
         />
-        <InputCreate
-          name="password"
-          value={addNewUser.password}
-          onChange={handleChange}
-          className="after:content-['*'] after:ml-0.5 after:text-red-500"
-        />
         <div className="w-40 flex gap-4 items-center">
           <h1 className="font-bold mt-2 text-[#4D648D] w-[100px] after:content-['*'] after:ml-0.5 after:text-red-500">
             Role
@@ -135,19 +142,21 @@ const CreateUser = ({ onUser }) => {
         </div>
       </DialogBody>
       <DialogFooter className="flex justify-center items-center gap-5">
-        <button
-          onClick={onUser}
-          className="border-[1px] border-gray-500 py-1 px-4 rounded-[5px] text-gray-500 text-lg text-center flex justify-center "
-        >
-          Cancel
-        </button>
-        <button
+        <Button onClick={onUser} icon={<MdClose />} name="Cancel" className="!py-1 px-3 !text-lg" />
+        <Button
           onClick={handleAddUser}
-          className="bg-[#4D648D] py-1 px-4 rounded-[5px] text-white text-lg text-center flex justify-center"
-        >
-          Save
-        </button>
+          icon={<FiSave />}
+          name="Save"
+          className="bg-[#4D648D] !py-1 px-4 text-white font-semibold !text-lg"
+        />
       </DialogFooter>
+
+      {isNotice && (
+        <Notice
+          onNotice={() => setIsNotice(false)}
+          des="You have already created a new user successfully."
+        />
+      )}
     </Dialog>
   );
 };

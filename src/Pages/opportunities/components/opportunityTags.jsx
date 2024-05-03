@@ -4,7 +4,7 @@ import Tools from './tools';
 import Paging from '../../../components/paging';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { getAllOpportunities, getOpportunities } from '../../../redux/slice/opportunitySlice';
+import { getOpportunities } from '../../../redux/slice/opportunitySlice';
 
 const titles = ['Name', 'Stage', 'Expected Revenue', 'Description', 'Salesperson'];
 
@@ -19,7 +19,7 @@ const OpportunityTags = () => {
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
-    dispatch(getAllOpportunities(pageNumber));
+    dispatch(getOpportunities(pageNumber));
   };
 
   // useEffect(() => {

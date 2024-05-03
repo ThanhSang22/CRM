@@ -1,25 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { Avatar } from '@material-tailwind/react';
 import logo from '../assets/images/logo.png';
-import avatar from '../assets/images/avatar.png';
 import { IoIosArrowDown } from 'react-icons/io';
 import classNames from 'classnames';
 import { Fragment } from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import { Link, useNavigate } from 'react-router-dom';
-import CreateOpportunity from '../Pages/createOpportunity/createOpportunity';
 import { MdOutlineViewKanban } from 'react-icons/md';
 import { TiContacts } from 'react-icons/ti';
 import { LiaFileAltSolid } from 'react-icons/lia';
-import { IoDocumentAttachOutline } from 'react-icons/io5';
 import { BsPeople } from 'react-icons/bs';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import auth from '../features/auth/api';
 import useActiveMenu from '../hooks/useActiveMenu.ts';
 import { logoutUser } from '../redux/slice/authSlice.js';
 
 export default function Header({ ShowChangePass }) {
-  const [openCreate, setOpenCreate] = useState(false);
   const [user, setUser] = useState({});
   const dispatch = useDispatch();
   const { isActive } = useActiveMenu();
@@ -27,7 +23,7 @@ export default function Header({ ShowChangePass }) {
   // console.log('token====', token);
   // const users = useSelector((state) => state.auth.user);
   // console.log('user====', users);
-  const userA = useSelector((state) => state.auth.user);
+  // const userA = useSelector((state) => state.auth.user);
 
   useEffect(() => {
     const getData = async () => {
@@ -71,12 +67,6 @@ export default function Header({ ShowChangePass }) {
       path: '/contacts',
     },
     {
-      icon: <IoDocumentAttachOutline />,
-      label: 'File',
-      value: 'file',
-      path: `/files`,
-    },
-    {
       icon: <BsPeople />,
       label: 'User',
       value: 'user',
@@ -84,45 +74,66 @@ export default function Header({ ShowChangePass }) {
     },
   ];
 
-  // console.log('avar', user.avatar?.physicalPath);
+  const dataUser = data.slice(0, 3);
 
   return (
     <>
-      {/* {token ? ( */}
       <div>
         <div className="relative">
           <div className="flex justify-between py-5 px-7  w-full items-end border-b-[1px] border-gray-300">
             <img src={logo} alt="" width={120} />
             <div className="flex rounded-lg border-blue-gray-50 bg-transparent p-0 gap-16">
-              {data.map(({ icon, label, value, path }) => (
-                <Link
-                  key={value}
-                  className={
-                    isActive(path)
-                      ? 'text-[#4D648D] font-semibold'
-                      : 'text-gray-900 hover:text-[#4D648D] hover:scale-105'
-                  }
-                  to={path}
-                >
-                  <div className="text-lg flex items-center gap-1 cursor-pointer">
-                    {icon}
-                    {label}
-                    {/* {role === 'admin' ? label : label !== 'User'} */}
-                  </div>
-                  <hr
-                    className={
-                      isActive(path)
-                        ? 'text-[#4D648D] border-b-[5px] border-[#4D648D] shadow-none rounded'
-                        : ' border-none'
-                    }
-                  />
-                </Link>
-              ))}
+              {role === 'admin'
+                ? data.map(({ icon, label, value, path }) => (
+                    <Link
+                      key={value}
+                      className={
+                        isActive(path)
+                          ? 'text-[#4D648D] font-semibold'
+                          : 'text-gray-900 hover:text-[#4D648D] hover:scale-105'
+                      }
+                      to={path}
+                    >
+                      <div className="text-lg flex items-center gap-1 cursor-pointer">
+                        {icon}
+                        {label}
+                      </div>
+                      <hr
+                        className={
+                          isActive(path)
+                            ? 'text-[#4D648D] border-b-[5px] border-[#4D648D] shadow-none rounded'
+                            : ' border-none'
+                        }
+                      />
+                    </Link>
+                  ))
+                : dataUser.map(({ icon, label, value, path }) => (
+                    <Link
+                      key={value}
+                      className={
+                        isActive(path)
+                          ? 'text-[#4D648D] font-semibold'
+                          : 'text-gray-900 hover:text-[#4D648D] hover:scale-105'
+                      }
+                      to={path}
+                    >
+                      <div className="text-lg flex items-center gap-1 cursor-pointer">
+                        {icon}
+                        {label}
+                      </div>
+                      <hr
+                        className={
+                          isActive(path)
+                            ? 'text-[#4D648D] border-b-[5px] border-[#4D648D] shadow-none rounded'
+                            : ' border-none'
+                        }
+                      />
+                    </Link>
+                  ))}
             </div>
             <div className="flex gap-2 items-center z-50">
               <Avatar
-                src={user.avatar?.physicalPath ? avatar : ''}
-                // src="http://192.168.199.242:8080/uploads/avatars/20240422142240192_spring.jpg"
+                src={`http://192.168.199.242:8080/avatars/${user.avatar?.id}`}
                 alt="avatar"
                 size="sm"
               />
@@ -193,17 +204,7 @@ export default function Header({ ShowChangePass }) {
             </div>
           </div>
         </div>
-
-        {openCreate && (
-          <CreateOpportunity
-            onCloseCreate={() => setOpenCreate(!openCreate)}
-            className="fixed z-50 top-0 bottom-0"
-          />
-        )}
       </div>
-      {/* ) : (
-        <SignIn />
-      )} */}
     </>
   );
 }

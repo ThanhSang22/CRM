@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from '@material-tailwind/react';
+import Button from '../../../components/button';
 import { IoMdAdd, IoMdCloudUpload } from 'react-icons/io';
 import { FiSearch } from 'react-icons/fi';
 
@@ -8,24 +8,16 @@ function HeaderBoard({ toggleCreatingTask }) {
     <div className="flex mx-9 my-6 justify-between z-10">
       <div className="flex gap-3">
         <Button
-          className="flex items-center gap-2 text-base justify-center ring-1 ring-[#8E8E8E] p-1.5 rounded-md !text-[#8E8E8E] font-normal normal-case h-6"
-          variant="text"
+          icon={<IoMdAdd size={20} />}
           onClick={toggleCreatingTask}
-        >
-          <span className="text-[#4D648D]">
-            <IoMdAdd size={20} />
-          </span>
-          Create
-        </Button>
+          name="Create"
+          className="p-1.5 !text-[#4D648D] font-semibold h-[30px] border-[#4D648D] rounded-[5px] border-[1px] !text-[15px] normal-case"
+        />
         <Button
-          className="flex items-center gap-2 text-base justify-center ring-1 ring-[#8E8E8E] p-1.5 rounded-md !text-[#8E8E8E] font-normal normal-case h-6"
-          variant="text"
-        >
-          <span className="text-[#4D648D]">
-            <IoMdCloudUpload size={20} />
-          </span>
-          Import
-        </Button>
+          icon={<IoMdCloudUpload size={20} />}
+          name="Import"
+          className="p-1.5 !text-[#4D648D] font-semibold h-[30px] border-[#4D648D] rounded-[5px] border-[1px] !text-[15px] normal-case"
+        />
       </div>
       <div className="w-60">
         <div className="relative w-full min-w-[200px] h-7">

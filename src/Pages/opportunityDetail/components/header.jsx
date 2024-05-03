@@ -10,21 +10,19 @@ import { logout } from '../../../redux/action/auth';
 import ChangePassword from '../../kanban/components/changePassword';
 import { Link } from 'react-router-dom';
 import auth from '../../../features/auth/api';
+import { logoutUser } from '../../../redux/slice/authSlice';
 
-const Header = () => {
+const Header = ({ company }) => {
   const [showChangePass, setShowChangePass] = useState(false);
   const dispatch = useDispatch();
-  const [user, setUser] = useState({});
-  const token = useSelector((state) => state.auth.token);
-  console.log('token====', token);
-  const users = useSelector((state) => state.auth.user);
-  console.log('user====', users);
+  // const [user, setUser] = useState({});
+  const user = useSelector((state) => state.auth.userLogin.user);
+  console.log('user====', user);
 
   // useEffect(() => {
   //   const getData = async () => {
   //     try {
-  //       const res = await auth.login();
-  //       console.log('check-user---', res);
+  //       const res = await auth.getUser();
   //       setUser(res);
   //     } catch (error) {
   //       console.log(error.message);
@@ -38,24 +36,28 @@ const Header = () => {
   const role = roleString?.slice(5).toLowerCase();
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    dispatch(logout());
+    dispatch(logoutUser());
   };
 
   return (
     <>
       <>
         <div className="h-[80px] bg-white border-[0.5px] border-b-[#8E8E8E] flex px-5 justify-between">
-          <div className=" space-x-3 flex items-center text-[#4D648D]">
+          <div className="text-[20px] font-medium space-x-3 flex items-center text-[#4D648D]">
             <Link to="/kanban-board">
               <GrFormPreviousLink className="text-[#8E8E8E]" size={25} />
             </Link>
             <p>Board</p>
             <GrFormNext size={20} />
-            <p>Lorem ipsum dolor sit amet</p>
+            <p>{company}</p>
           </div>
           <div className="flex gap-2 items-center z-50">
-            <Avatar src={user.avatar?.physicalPath || avatar} alt="avatar" size="sm" />
+            <Avatar
+              // src={user.avatar?.physicalPath || avatar}
+              src={`http://192.168.199.242:8080/avatars/${user.avatar?.id}`}
+              alt="avatar"
+              size="sm"
+            />
             <Menu as="div" className="relative inline-block text-left">
               <div>
                 <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-md text-sm">

@@ -9,7 +9,7 @@ import { FaRegUser } from 'react-icons/fa';
 import { HiOutlineLockClosed } from 'react-icons/hi2';
 import 'react-toastify/dist/ReactToastify.css';
 import CustomInput from '../../components/customInput';
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import ForgotPassword from '../forgotPassword/forgotPassword';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginUser } from '../../redux/slice/authSlice';
@@ -17,8 +17,6 @@ import { loginUser } from '../../redux/slice/authSlice';
 const loginSchema = yup.object().shape({
   username: yup.string().required('*Invalid username'),
   password: yup.string().required('*Invalid password'),
-  // username: yup.string().required('Please enter username').email('*Invalid username'),
-  // password: yup.string().required('Required').password('*Invalid password'),
 });
 
 const SignIn = () => {
@@ -38,7 +36,9 @@ const SignIn = () => {
   const navigate = useNavigate();
   const authState = useSelector((state) => state.auth);
 
-  console.log('loafing:' + authState.loading);
+  console.log('error:' + authState.error);
+
+  console.log('loading:' + authState.loading);
   if (authState.userLogin != null) {
     navigate('/kanban-board');
   }
@@ -57,19 +57,17 @@ const SignIn = () => {
   //   }
   // };
 
-  const inputRef = useRef();
-
   const onSubmit = (data) => {
     dispatch(loginUser(data));
   };
 
   return (
     <div className="flex bg-[#4D648D] w-full h-[100vh]">
-      <ToastContainer />
+      <ToastContainer position="top-center" autoClose={2000} />
       <div className="w-[50%] flex flex-col items-center py-[65px] md:px-0 px-10">
         <div className="space-y-3">
           <h1 className="text-white lg:text-5xl leading-9 tracking-tight text-start font-semibold text-4xl">
-            Connect and Enhance {authState.loading && <p>Loading</p>}
+            Connect and Enhance
           </h1>
           <h1 className="text-white lg:text-5xl leading-9 tracking-tight text-start font-semibold text-4xl">
             Customer Relationships
@@ -120,12 +118,12 @@ const SignIn = () => {
 
             <button
               type="submit"
-              className="flex w-full justify-center rounded-md bg-[#4D648D] px-4 py-3 mt-[80px] text-base 
+              className={`flex w-full justify-center rounded-md bg-[#4D648D] px-4 py-3 mt-[80px] text-base 
                 font-semibold leading-6 text-white shadow-sm hover:bg-[#6082bd] 
                 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 
-                focus-visible:outline-indigo-600"
+                focus-visible:outline-indigo-600  ${authState.loading ? 'bg-[#6082bd]' : 'bg-[#4D648D]'}`}
             >
-              Sign in
+              {authState.loading ? 'Loding...' : 'Sign in'}
             </button>
           </form>
         </div>

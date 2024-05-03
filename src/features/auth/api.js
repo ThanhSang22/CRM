@@ -1,3 +1,4 @@
+import { avatar } from '@material-tailwind/react';
 import axiosClient from '../../api/axios-client';
 
 const delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
@@ -5,7 +6,7 @@ const delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, mil
 const auth = {
   // login: async (payload) => await axiosClient.post('/api/login', payload),
   login: async (payload) => {
-    await delay(5000);
+    await delay(1000);
     return await axiosClient.post('/auth/login', payload);
   },
   getUser: async () => await axiosClient.get('/auth/user'),

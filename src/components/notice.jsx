@@ -2,10 +2,11 @@ import React from 'react';
 import { Dialog, DialogBody } from '@material-tailwind/react';
 import { IoIosCheckmarkCircleOutline, IoIosClose } from 'react-icons/io';
 
-const Notice = ({ onNotice, mail }) => {
+const Notice = ({ onNotice, des }) => {
   return (
     <Dialog
       open={onNotice}
+      handler={onNotice}
       className="w-[780px] space-y-7 py-6 px-[30px] bg-white rounded-[10px] flex flex-col justify-between"
     >
       <span
@@ -18,9 +19,7 @@ const Notice = ({ onNotice, mail }) => {
         <IoIosCheckmarkCircleOutline className="text-[#129D28]" size={120} />
       </div>
       <DialogBody>
-        <p className="text-center">
-          You have already imported opportunities from Excel file successfully.
-        </p>
+        <p className="text-center">{des}</p>
       </DialogBody>
     </Dialog>
   );

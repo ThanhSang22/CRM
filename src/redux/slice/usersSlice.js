@@ -1,13 +1,14 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import users from '../../features/user';
 
-export const getUsers = createAsyncThunk('users/getUsers', async (page, { rejectWithValue }) => {
-  try {
-    const getUsers = await users.getUsers(page - 1);
-    return getUsers;
-  } catch (error) {
-    return rejectWithValue(error.message);
-  }
+export const getUsers = createAsyncThunk('users/getUsers', async (page) => {
+  const getUsers = await users.getUsers(page - 1);
+  return getUsers;
+});
+
+export const addUser = createAsyncThunk('users/addUser', async (payload) => {
+  const res = await users.addUser(payload);
+  return res;
 });
 
 // Slice cho trạng thái người dùng
@@ -17,29 +18,35 @@ const usersSlice = createSlice({
     users: [],
     loading: false,
     error: null,
+    user: null,
   },
   reducers: {
-    getAllUsers(state) {
-      state.users = state.payload;
+    addNewUser(state) {
+      state.loading = true;
+      state.user = state.payload;
     },
   },
+
   extraReducers(builder) {
     builder
-      .addMatcher(getUsers.pending, (state) => {
+      .addCase(getUsers.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addMatcher(getUsers.fulfilled, (state, action) => {
+      .addCase(getUsers.fulfilled, (state, action) => {
         state.loading = false;
         state.users = action.payload;
       })
-      .addMatcher(getUsers.rejected, (state, action) => {
+      .addCase(getUsers.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
+    // .addCase(addUser.fulfilled, (state, action) => {
+    //   state.users.push(action.payload);
+    // });
   },
 });
 
 // Export các action creators và reducer
-export const { getAllUsers } = usersSlice.actions;
+export const { addNewUser } = usersSlice.actions;
 export default usersSlice.reducer;

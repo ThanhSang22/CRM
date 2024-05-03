@@ -3,7 +3,8 @@ import { Checkbox } from '@material-tailwind/react';
 import Tools from './tools';
 import Paging from '../../../components/paging';
 import { useDispatch, useSelector } from 'react-redux';
-import { getContacts, getAllContacts } from '../../../redux/slice/contactSlice';
+import { editContact, getContacts } from '../../../redux/slice/contactSlice';
+import { Link, useParams } from 'react-router-dom';
 
 const titles = ['Name', 'Job position', 'Email', 'Mobile', 'Birthday', 'Gender'];
 const ContactTags = () => {
@@ -13,12 +14,11 @@ const ContactTags = () => {
 
   useEffect(() => {
     dispatch(getContacts(currentPage));
-    // dispatch(fetchOpportunities(currentPage));
   }, [currentPage]);
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
-    dispatch(getAllContacts(pageNumber));
+    dispatch(getContacts(pageNumber));
   };
 
   return (
@@ -69,7 +69,8 @@ const ContactTags = () => {
       {allContacts?.contacts?.map((contact, index) => {
         const birthday = contact.birthday?.substr(0, 10);
         return (
-          <div
+          <Link
+            to={`/contacts/editcontact/${contact.id}`}
             key={index}
             className="flex py-4 rounded-[10px] border-[0.3px] border-[#4D648D] text-start gap-3
             justify-between items-center  mt-3 hover:shadow-[4px_4px_4px_0_rgba(77,100,141,0.5)] text-ellipsis"
@@ -92,7 +93,7 @@ const ContactTags = () => {
             <p className="w-[12%]">{contact.phone}</p>
             <p className="text-base w-[13%] ">{birthday}</p>
             <p className="w-[10%] whitespace-nowrap">{contact.gender}</p>
-          </div>
+          </Link>
         );
       })}
     </>

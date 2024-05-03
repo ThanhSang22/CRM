@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-// import { users } from '../../../data/users';
 import { Avatar, Checkbox } from '@material-tailwind/react';
 import avatar from '../../../assets/images/avatar.png';
 import Paging from '../../../components/paging';
 import Tools from './tools';
 import { useDispatch, useSelector } from 'react-redux';
-import { getUsers, getAllUsers } from '../../../redux/slice/usersSlice.js';
+import { getUsers } from '../../../redux/slice/usersSlice.js';
+import { Link } from 'react-router-dom';
 
 const titles = ['Name', 'Email', 'Mobile', 'Birthday', 'Gender', 'Role'];
 
@@ -22,7 +22,7 @@ const UserTags = () => {
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
-    dispatch(getAllUsers(pageNumber));
+    dispatch(getUsers(pageNumber));
   };
 
   return (
@@ -75,7 +75,8 @@ const UserTags = () => {
         const birthday = user.birthday?.substr(0, 10);
 
         return (
-          <div
+          <Link
+            to={`/users/edituser/${user.id}`}
             key={u}
             className="flex py-4 rounded-[10px] border-[0.3px] border-[#4D648D] text-start gap-3
             justify-between items-center pr-2 mt-3 hover:shadow-[4px_4px_4px_0_rgba(77,100,141,0.5)] text-ellipsis"
@@ -85,7 +86,7 @@ const UserTags = () => {
                 ripple={false}
                 className="transition-all hover:scale-105 hover:before:opacity-0 checked:bg-[#4D648D] checked:border-[#4D648D]"
               />
-              <Avatar src={avatar} />
+              <Avatar src={`http://192.168.199.242:8080/avatars/${user.avatar?.id}`} />
             </div>
             <div className="w-[20%]">
               <h1 className="text-black text-base font-semibold font-['Noto Sans'] whitespace-nowrap">
@@ -100,7 +101,7 @@ const UserTags = () => {
             <p className="text-base w-[12%] ">{birthday}</p>
             <p className="w-[10%] whitespace-nowrap">{user.gender}</p>
             <p className="w-[7%] capitalize">{role}</p>
-          </div>
+          </Link>
         );
       })}
     </>

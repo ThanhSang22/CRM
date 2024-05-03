@@ -7,6 +7,9 @@ import CustomInput from '../../../components/customInput';
 import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogBody } from '@material-tailwind/react';
 import auth from '../../../features/auth/api';
+import { FiSave } from 'react-icons/fi';
+import { MdClose } from 'react-icons/md';
+import Button from '../../../components/button';
 
 const changePasswordSchema = yup.object().shape({
   password: yup.string().required('*Invalid password'),
@@ -24,6 +27,7 @@ const ChangePassword = ({ onClosePass }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setChangePass({ ...changPass, [name]: value });
+    console.log('=======', changPass);
   };
 
   const {
@@ -40,13 +44,13 @@ const ChangePassword = ({ onClosePass }) => {
     try {
       const response = await auth.changPass(data);
       console.log('===', response);
-      // if (response) {
-      //   // localStorage.removeItem('token');
-      //   // navigate('/');
-      //   console.log(response);
-      // } else {
-      //   throw new Error('Failed to change password');
-      // }
+      if (response) {
+        // localStorage.removeItem('token');
+        // navigate('/');
+        console.log(response);
+      } else {
+        throw new Error('Failed to change password');
+      }
     } catch (error) {
       console.error('Error changing password:', error);
     }
@@ -71,7 +75,6 @@ const ChangePassword = ({ onClosePass }) => {
             id="oldpassword"
             name="oldpassword"
             onChange={handleChange}
-            // value={changPass.oldPassword}
             placeholder={'Enter your password'}
             errors={errors.password?.message}
             register={register('password')}
@@ -82,7 +85,6 @@ const ChangePassword = ({ onClosePass }) => {
             id="newPassword"
             name="newPassword"
             onChange={handleChange}
-            // value={changPass.newPassword}
             placeholder={'Enter new password'}
             errors={errors.newPassword?.message}
             register={register('newPassword')}
@@ -93,19 +95,21 @@ const ChangePassword = ({ onClosePass }) => {
             id="renewPassword"
             name="renewPassword"
             onChange={handleChange}
-            // value={changPass.renewPassword}
             placeholder={'Enter new password again'}
             errors={errors.renewPassword?.message}
             register={register('renewPassword')}
             showPassWord={true}
             className="!placeholder:text-[#000000] !px-4 !h-[50px]"
           />
-          <button
-            type="submit"
-            className="bg-[#4D648D] py-2 px-6 rounded-[10px] text-white text-lg text-center my-[20px]"
-          >
-            Save
-          </button>
+          <div className="flex justify-center gap-3 mt-16">
+            <Button onClick={onClosePass} icon={<MdClose />} name="Cancel" />
+            <Button
+              type="submit"
+              icon={<FiSave />}
+              name="Save"
+              className="bg-[#4D648D] py-2 px-3 text-white font-semibold"
+            />
+          </div>
         </form>
       </DialogBody>
     </Dialog>

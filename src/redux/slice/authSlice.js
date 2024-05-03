@@ -1,10 +1,23 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import auth from '../../features/auth/api';
+import { toast } from 'react-toastify';
 
 // Action creator bằng createAsyncThunk để đăng nhập người dùng
 export const loginUser = createAsyncThunk('auth/loginUser', async (payload) => {
-  const response = await auth.login(payload); // Gọi API login
-  localStorage.setItem('token', response.token); // Lưu token vào localStorage
+  try {
+    const response = await auth.login(payload); // Gọi API login
+    localStorage.setItem('token', response.token); // Lưu token vào localStorage
+    return response;
+  } catch (error) {
+    toast.error('🦄Login Failed: Invalid account', {
+      position: 'top-center',
+      autoClose: 2000,
+    });
+  }
+});
+
+export const avartarUser = createAsyncThunk('auth/loginUser', async (id) => {
+  const response = await auth.avatar(id); // Gọi API
   return response;
 });
 
@@ -17,9 +30,6 @@ const authSlice = createSlice({
     error: null,
   },
   reducers: {
-    // login(state, action) {
-    //   state.userLogin = action.payload;
-    // },
     logoutUser(state) {
       localStorage.removeItem('token');
       state.userLogin = null;
@@ -27,15 +37,15 @@ const authSlice = createSlice({
   },
   extraReducers(builder) {
     builder
-      .addMatcher(loginUser.pending, (state) => {
+      .addCase(loginUser.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addMatcher(loginUser.fulfilled, (state, action) => {
+      .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
         state.userLogin = action.payload;
       })
-      .addMatcher(loginUser.rejected, (state, action) => {
+      .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

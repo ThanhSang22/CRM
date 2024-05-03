@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { BiEditAlt } from 'react-icons/bi';
 import EditContact from './editContact';
+import { RiDeleteBin6Line } from 'react-icons/ri';
 
 const Tools = () => {
   // const [onCreateContact, setOnCreateContact] = useState(false);
@@ -14,6 +15,10 @@ const Tools = () => {
         >
           <BiEditAlt size={20} />
           Edit
+        </button>
+        <button className="flex items-center gap-1 text-[#4D648D] font-semibold hover:scale-105">
+          <RiDeleteBin6Line size={20} />
+          Delete
         </button>
       </div>
       {/* {onCreateContact && <CreateContact onContact={() => setOnCreateContact(false)} />} */}

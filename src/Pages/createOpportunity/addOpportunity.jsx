@@ -1,13 +1,20 @@
 import React, { useState } from 'react';
-import { Dialog, DialogBody, Option, Select, Switch } from '@material-tailwind/react';
+import { Dialog, DialogBody, DialogHeader, Option, Select, Switch } from '@material-tailwind/react';
 import InputCreate from '../../components/inputCreate';
 import { IoIosClose } from 'react-icons/io';
 import { useDispatch, useSelector } from 'react-redux';
-import { addAOpportunity } from '../../redux/slice/opportunitySlice';
+import { addOpportunity } from '../../redux/slice/opportunitySlice';
+import Notice from '../../components/notice';
+import Button from '../../components/button';
+import { MdClose } from 'react-icons/md';
+import { FiSave } from 'react-icons/fi';
 
-function AddOpportunity({ onClose, stages, onAdd }) {
+function AddOpportunity({ onClose, stages }) {
+  const [isNotice, setIsNotice] = useState(false);
+
   const dispatch = useDispatch();
   const loading = useSelector((state) => state.opportunity.loading);
+  console.log('lo', loading);
   const [newOpportunity, setNewOpportunity] = useState({
     name: '',
     company: '',
@@ -23,11 +30,16 @@ function AddOpportunity({ onClose, stages, onAdd }) {
   const handleAddOpportunityInputChange = (e) => {
     const { name, value } = e.target;
     setNewOpportunity({ ...newOpportunity, [name]: value });
+    console.log('==========', newOpportunity);
   };
 
   const handleAddOpportunity = () => {
     try {
-      dispatch(addAOpportunity(newOpportunity));
+      dispatch(addOpportunity(newOpportunity));
+      setIsNotice(true);
+      setTimeout(() => {
+        setIsNotice(false);
+      }, 2000);
       onClose();
     } catch (error) {
       console.error('Error adding opportunity:', error);
@@ -65,16 +77,16 @@ function AddOpportunity({ onClose, stages, onAdd }) {
 
   return (
     <>
-      <Dialog open={true} onClose={onClose}>
+      <Dialog open={true} handler={onClose}>
         <span
-          className="text-4xl text-end flex justify-end text-[#8E8E8E] cursor-pointer"
+          className="text-4xl text-end flex justify-end text-[#8E8E8E] cursor-pointer mt-5 mr-5"
           onClick={onClose}
         >
           <IoIosClose />
         </span>
-        <h1 className="text-3xl text-[#4D648D] font-bold text-center my-[30px]">
+        <DialogHeader className="text-3xl text-[#4D648D] font-bold text-center mb-[10px] flex justify-center">
           CREATE OPPORTUNITY
-        </h1>
+        </DialogHeader>
         <DialogBody>
           <form className="flex flex-col gap-[10px] space-y-7 m-7">
             <div className="flex flex-col gap-7 mx-7">
@@ -119,7 +131,7 @@ function AddOpportunity({ onClose, stages, onAdd }) {
                   name="revenue"
                   onChange={handleAddOpportunityInputChange}
                   value={newOpportunity.revenue}
-                  classNameA="flex flex-col text-start justify-start items-start w-[60%]"
+                  classNameA="flex flex-col !text-start !justify-start !items-start w-[60%]"
                 >
                   <u className="text-black font-semibold absolute right-[54%]">đ</u>
                 </InputCreate>
@@ -138,9 +150,11 @@ function AddOpportunity({ onClose, stages, onAdd }) {
                       value={newOpportunity.stageId}
                       onChange={(stageId) => setNewOpportunity({ ...newOpportunity, stageId })}
                     >
-                      {stages.map((stage) => (
+                      {stages?.map((stage) => (
                         <Option name="stageId" key={stage.id} value={stage.id}>
-                          {stage.name !== 'WON' && stage.name !== 'LOST' && <p>{stage.name}</p>}
+                          {stage.name !== 'WON' && stage.name !== 'LOST' ? (
+                            <p>{stage.name}</p>
+                          ) : null}
                         </Option>
                       ))}
                     </Select>
@@ -167,21 +181,22 @@ function AddOpportunity({ onClose, stages, onAdd }) {
             </div>
           </form>
           <div className="flex justify-center items-center gap-5">
-            <button
-              onClick={onClose}
-              className="border-[1px] border-gray-500 py-1 px-4 rounded-[5px] text-gray-500 text-lg text-center flex justify-center "
-            >
-              Cancel
-            </button>
-            <button
+            <Button onClick={onClose} icon={<MdClose />} name="Cancel" className=" py-1 px-4" />
+            <Button
               onClick={handleAddOpportunity}
-              className={`bg-[#4D648D] py-1 px-4 rounded-[5px] text-white text-lg text-center flex justify-center `}
-            >
-              Save
-            </button>
+              icon={<FiSave />}
+              name={`${loading ? 'Saving...' : 'Save'}`}
+              className="bg-[#4D648D] py-1 px-4 text-white font-semibold"
+            />
           </div>
         </DialogBody>
       </Dialog>
+      {isNotice && (
+        <Notice
+          onNotice={isNotice}
+          des="You have already created a new opportunity successfully."
+        />
+      )}
     </>
   );
 }

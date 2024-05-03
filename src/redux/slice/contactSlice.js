@@ -1,13 +1,19 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import contact from '../../features/contact';
 
-export const getContacts = createAsyncThunk('contacts/getContacts', (page, { rejectWithValue }) => {
-  try {
-    const res = contact.getContacts(page - 1);
-    return res;
-  } catch (error) {
-    return rejectWithValue(error.message);
-  }
+export const getContacts = createAsyncThunk('contacts/getContacts', (page) => {
+  const res = contact.getContacts(page - 1);
+  return res;
+});
+
+export const editContact = createAsyncThunk('contacts/editContact', (id) => {
+  const res = contact.putContact(id);
+  return res;
+});
+
+export const getAContact = createAsyncThunk('contacts/getAContact', (id) => {
+  const res = contact.getAContact(id);
+  return res;
 });
 
 // Slice cho trạng thái người dùng
@@ -19,21 +25,33 @@ const contactsSlice = createSlice({
     error: null,
   },
   reducers: {
-    getAllContacts(state) {
-      state.contacts = state.payload;
+    contactUpdate(state, action) {
+      const { id, firstname, lastname, fullname, email, phone, birthday, gender, jobPosition } =
+        action.payload;
+      const existingContact = state.contacts.find((contact) => contact.id === id);
+      if (existingContact) {
+        existingContact.firstname = firstname;
+        existingContact.lastname = lastname;
+        existingContact.fullname = fullname;
+        existingContact.email = email;
+        existingContact.phone = phone;
+        existingContact.birthday = birthday;
+        existingContact.gender = gender;
+        existingContact.jobPosition = jobPosition;
+      }
     },
   },
   extraReducers(builder) {
     builder
-      .addMatcher(getContacts.pending, (state) => {
+      .addCase(getContacts.pending, (state) => {
         state.loading = 'pending';
         state.error = null;
       })
-      .addMatcher(getContacts.fulfilled, (state, action) => {
+      .addCase(getContacts.fulfilled, (state, action) => {
         state.loading = 'success';
         state.contacts = action.payload;
       })
-      .addMatcher(getContacts.rejected, (state, action) => {
+      .addCase(getContacts.rejected, (state, action) => {
         state.loading = 'fail';
         state.error = action.payload;
       });
@@ -41,5 +59,8 @@ const contactsSlice = createSlice({
 });
 
 // Export các action creators và reducer
-export const { getAllContacts } = contactsSlice.actions;
+// export const { getAllContacts } = contactsSlice.actions;
 export default contactsSlice.reducer;
+
+export const selectContactById = (state, contactId) =>
+  state.contacts.contacts.find((contact) => contact.id === contactId);

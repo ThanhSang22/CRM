@@ -2,7 +2,7 @@ import React from 'react';
 
 const InputCreate = ({ name, type, onChange, className, classNameA, value, children }) => {
   return (
-    <div className={`flex gap-3 ${classNameA}`}>
+    <div className={`flex gap-3 ${classNameA} items-center`}>
       <h1
         className={`font-bold w-[100px] text-[#4D648D] whitespace-nowrap text-[15px] capitalize ${className}`}
       >

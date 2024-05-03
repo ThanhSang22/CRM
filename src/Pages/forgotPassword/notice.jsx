@@ -7,6 +7,7 @@ const Notice = ({ onNotice, mail }) => {
   return (
     <Dialog
       open={onNotice}
+      handler={onNotice}
       className="w-[780px] space-y-7 py-6 px-[30px] bg-white rounded-[10px] flex flex-col justify-between"
     >
       <span
