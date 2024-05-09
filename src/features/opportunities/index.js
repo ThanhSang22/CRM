@@ -6,6 +6,7 @@ const opportunities = {
     await axiosClient.get(`/opportunities?page=${page}&size=5&sortBy=name`),
   addOpportunity: async (payload) => await axiosClient.post(`/opportunities`, payload),
   getAnOpp: async (id) => await axiosClient.get(`/opportunities/${id}`),
+  importOpp: async (file) => await axiosClient.post(`/opportunities/excel`, file),
 };
 
 export default opportunities;

@@ -1,17 +1,10 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import board from '../../features/board/api';
 
-export const getStage = createAsyncThunk(
-  'stages/getStage',
-  async (stageID, { rejectWithValue }) => {
-    try {
-      const res = await board.getStage(stageID);
-      return res;
-    } catch (error) {
-      return rejectWithValue(error.message);
-    }
-  },
-);
+export const getStage = createAsyncThunk('stages/getStage', async (stageID) => {
+  const res = await board.getStage(stageID);
+  return res;
+});
 
 // Slice cho trạng thái người dùng
 const stagesSlice = createSlice({
@@ -26,7 +19,6 @@ const stagesSlice = createSlice({
       .addCase(getStage.pending, (state) => {
         state.loading = true;
         state.error = null;
-        console.log('...............................');
       })
       .addCase(getStage.fulfilled, (state, action) => {
         state.loading = false;

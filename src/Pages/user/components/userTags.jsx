@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Avatar, Checkbox } from '@material-tailwind/react';
-import avatar from '../../../assets/images/avatar.png';
 import Paging from '../../../components/paging';
 import Tools from './tools';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUsers } from '../../../redux/slice/usersSlice.js';
 import { Link } from 'react-router-dom';
+import moment from 'moment';
 
 const titles = ['Name', 'Email', 'Mobile', 'Birthday', 'Gender', 'Role'];
 
@@ -18,7 +18,7 @@ const UserTags = () => {
 
   useEffect(() => {
     dispatch(getUsers(currentPage));
-  }, [currentPage]);
+  }, [currentPage, dispatch]);
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -53,11 +53,11 @@ const UserTags = () => {
                   title === 'Name'
                     ? 'w-[20%] ml-[100px]'
                     : title === 'Email'
-                      ? 'w-[25%]'
+                      ? 'w-[20%]'
                       : title === 'Mobile'
                         ? 'w-[13%]'
                         : title === 'Birthday'
-                          ? 'w-[12%]'
+                          ? 'w-[17%]'
                           : title === 'Gender'
                             ? 'w-[10%]'
                             : 'w-[7%]'
@@ -72,7 +72,7 @@ const UserTags = () => {
         const roleString = user.roles.join();
         const role = roleString.slice(5).toLowerCase();
 
-        const birthday = user.birthday?.substr(0, 10);
+        const birthday = moment(user.birthday?.substr(0, 10)).format('MMMM DD, YYYY');
 
         return (
           <Link
@@ -94,12 +94,12 @@ const UserTags = () => {
               </h1>
               <p className="text-[#8E8E8E] text-sm italic">@{user.username}</p>
             </div>
-            <div className="w-[25%] text-base font-['Noto Sans'] whitespace-nowrap text-ellipsis">
+            <div className="w-[20%] text-base font-['Noto Sans'] whitespace-nowrap text-ellipsis">
               {user.email}
             </div>
             <p className="w-[13%]">{user.phone}</p>
-            <p className="text-base w-[12%] ">{birthday}</p>
-            <p className="w-[10%] whitespace-nowrap">{user.gender}</p>
+            <p className="text-base w-[17%] whitespace-nowrap">{birthday}</p>
+            <p className="w-[10%] whitespace-nowrap capitalize">{user.gender}</p>
             <p className="w-[7%] capitalize">{role}</p>
           </Link>
         );

@@ -1,80 +1,100 @@
 import React, { useEffect, useState } from 'react';
 import InputCreate from '../../../components/inputCreate';
-import { Dialog, DialogBody, DialogFooter } from '@material-tailwind/react';
+import { Dialog, DialogBody, DialogFooter, DialogHeader } from '@material-tailwind/react';
 import { IoIosClose } from 'react-icons/io';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { editContact, getAContact } from '../../../redux/slice/contactSlice';
-import { Link, useParams } from 'react-router-dom';
-import contacts from '../../../features/contact';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import Notice from '../../../components/notice';
+import moment from 'moment/moment';
+
 const EditContact = ({ onEdit }) => {
   const { id } = useParams();
+  const contact = useSelector((state) => state.contact.contact);
+  const [isNotice, setIsNotice] = useState(false);
+  const handler = () => setIsNotice(!isNotice);
+
   const [aContact, setAContact] = useState({
-    firstname: '',
-    lastname: '',
-    fullname: '',
-    email: '',
-    phone: '',
-    birthday: Date,
-    gender: '',
-    jobPosition: '',
+    firstname: contact?.firstname,
+    lastname: contact?.lastname,
+    fullname: contact?.fullname,
+    email: contact?.email,
+    phone: contact?.phone,
+    birthday: contact?.birthday,
+    gender: contact?.gender,
+    jobPosition: contact?.jobPosition,
   });
 
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    const getData = async () => {
-      const getAContact = await contacts.getAContact(id);
-      setAContact(getAContact);
-    };
+    dispatch(getAContact(id));
+  }, [id]);
 
-    getData();
-  }, []);
+  useEffect(() => {
+    setAContact(contact);
+  }, [contact]);
 
-  // useEffect(() => {
-  //   // dispatch(editContact(allContacts.id))
-  //   dispatch(getAContact(id));
-  // });
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setAContact({ ...aContact, [name]: value });
+    console.log('==========', aContact);
+  };
+
+  const onSaveClicked = () => {
+    dispatch(editContact(id));
+    navigate(`/contacts`);
+  };
 
   return (
     <Dialog open={true} handler={onEdit} className="py-4 px-5">
-      <spans
-        className="text-4xl text-end flex justify-end text-[#8E8E8E] cursor-pointer"
-        onClick={onEdit}
-      >
-        <Link to="/contacts">
-          <IoIosClose />
-        </Link>
-      </spans>
-      <h1 className="text-3xl text-[#4D648D] font-bold text-center my-[30px]">EDIT CONTACT</h1>
+      <DialogHeader className="flex !justify-end">
+        <spans className="text-4xl text-end text-[#8E8E8E] cursor-pointer" onClick={onEdit}>
+          <Link to="/contacts">
+            <IoIosClose />
+          </Link>
+        </spans>
+      </DialogHeader>
       <DialogBody className="space-y-6 px-20 xl:px-10">
+        <h1 className="text-3xl text-[#4D648D] font-bold text-center mb-10">EDIT CONTACT</h1>
         <InputCreate
-          value={aContact.fullname}
-          name="fullname"
+          onChange={handleChange}
+          value={aContact?.firstname}
+          name="firstname"
           className="after:content-['*'] after:ml-0.5 after:text-red-500"
         />
         <InputCreate
+          onChange={handleChange}
           name="lastname"
-          value={aContact.lastname}
+          value={aContact?.lastname}
           className="after:content-['*'] after:ml-0.5 after:text-red-500"
         />
         <InputCreate
-          value={aContact.email}
+          onChange={handleChange}
+          value={aContact?.email}
           name="email"
           className="after:content-['*'] after:ml-0.5 after:text-red-500"
         />
         <InputCreate
-          value={aContact.phone}
+          onChange={handleChange}
+          value={aContact?.phone}
           name="phone"
           className="after:content-['*'] after:ml-0.5 after:text-red-500"
         />
         <InputCreate
+          onChange={handleChange}
           name="jobposition"
-          value={aContact.jobPosition}
+          value={aContact?.jobPosition}
           className="after:content-['*'] after:ml-0.5 after:text-red-500"
         />
         <div className="flex justify-between">
           <InputCreate
-            value={aContact.birthday}
+            onChange={handleChange}
+            value={aContact?.birthday?.substr(0, 10)}
             type="date"
-            name="Birthday"
+            name="birthday"
             className="after:content-['*'] after:ml-0.5 after:text-red-500 w-[120px]"
           />
           <div className="w-40 flex gap-4 items-center ml-[20px]">
@@ -83,7 +103,8 @@ const EditContact = ({ onEdit }) => {
             </h1>
             <select
               className="text-base text-black w-[100px] mt-2 border-b-[0.3px] border-b-black outline-none"
-              value={aContact.gender}
+              value={aContact?.gender}
+              onChange={(gender) => setAContact({ ...aContact, gender })}
             >
               <option value={'famale'}>Female</option>
               <option value={'male'}>Male</option>
@@ -98,10 +119,18 @@ const EditContact = ({ onEdit }) => {
         >
           <Link to="/contacts">Cancel</Link>
         </button>
-        <button className="bg-[#4D648D] py-1 px-4 rounded-[5px] text-white text-lg text-center flex justify-center">
+        <button
+          onClick={onSaveClicked}
+          className="bg-[#4D648D] py-1 px-4 rounded-[5px] text-white text-lg text-center flex justify-center"
+        >
           Save
         </button>
       </DialogFooter>
+      <Notice
+        handler={handler}
+        onNotice={isNotice}
+        des="You have already updated a contact successfully. "
+      />
     </Dialog>
   );
 };

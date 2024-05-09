@@ -5,6 +5,7 @@ import Paging from '../../../components/paging';
 import { useDispatch, useSelector } from 'react-redux';
 import { editContact, getContacts } from '../../../redux/slice/contactSlice';
 import { Link, useParams } from 'react-router-dom';
+import moment from 'moment';
 
 const titles = ['Name', 'Job position', 'Email', 'Mobile', 'Birthday', 'Gender'];
 const ContactTags = () => {
@@ -53,11 +54,11 @@ const ContactTags = () => {
                 : title === 'Job position'
                   ? 'w-[15%]'
                   : title === 'Email'
-                    ? 'w-[25%]'
+                    ? 'w-[22%]'
                     : title === 'Mobile'
                       ? 'w-[12%]'
                       : title === 'Birthday'
-                        ? 'w-[13%]'
+                        ? 'w-[16%]'
                         : 'w-[10%]'
             }`}
             >
@@ -67,7 +68,7 @@ const ContactTags = () => {
         })}
       </div>
       {allContacts?.contacts?.map((contact, index) => {
-        const birthday = contact.birthday?.substr(0, 10);
+        const birthday = moment(contact.birthday?.substr(0, 10)).format('MMMM DD, YYYY');
         return (
           <Link
             to={`/contacts/editcontact/${contact.id}`}
@@ -87,11 +88,11 @@ const ContactTags = () => {
             <div className="w-[15%] text-base font-['Noto Sans'] whitespace-nowrap text-ellipsis">
               {contact.jobPosition}
             </div>
-            <div className="w-[25%] text-base font-['Noto Sans'] whitespace-nowrap text-ellipsis">
+            <div className="w-[22%] text-base font-['Noto Sans'] whitespace-nowrap text-ellipsis">
               {contact.email}
             </div>
             <p className="w-[12%]">{contact.phone}</p>
-            <p className="text-base w-[13%] ">{birthday}</p>
+            <p className="text-base w-[16%] ">{birthday}</p>
             <p className="w-[10%] whitespace-nowrap">{contact.gender}</p>
           </Link>
         );

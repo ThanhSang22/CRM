@@ -14,7 +14,7 @@ const forgotPasswordSchema = yup.object().shape({
   email: yup.string().required('*Invalid email'),
 });
 
-const ForgotPassword = ({ onClose }) => {
+const ForgotPassword = ({ onClose, handler }) => {
   const [notice, setNotice] = useState(false);
   const [email, setEmail] = useState('');
 
@@ -29,32 +29,26 @@ const ForgotPassword = ({ onClose }) => {
   const navigate = useNavigate();
 
   const onSubmit = async (data) => {
-    try {
-      const response = await auth.resetPass(data);
+    const response = await auth.resetPass(data);
 
-      if (response) {
-        navigate(onClose);
-        setNotice(true);
-      } else {
-        throw new Error('Reset password request failed');
-      }
-    } catch (error) {
-      console.error('Error resetting password:', error);
+    if (response) {
+      navigate(onClose);
+      setNotice(true);
     }
   };
 
   return (
     <>
       <Dialog
-        open={true}
-        handler={onClose}
+        open={onClose}
+        handler={handler}
         className="w-[580px] space-y-10 py-6 px-[50px] bg-white rounded-[10px] flex flex-col justify-between"
       >
         <div className="flex justify-between">
           <img src={logo} alt="" width={150} />
           <span
             className="text-4xl text-end flex justify-end text-[#8E8E8E] cursor-pointer"
-            onClick={onClose}
+            onClick={handler}
           >
             <IoIosClose />
           </span>
@@ -89,7 +83,7 @@ const ForgotPassword = ({ onClose }) => {
           </form>
         </DialogBody>
       </Dialog>
-      {notice && <Notice onNotice={() => setNotice(false)} mail={email} />}
+      <Notice onNotice={notice} mail={email} handler={() => setNotice(!notice)} />
     </>
   );
 };

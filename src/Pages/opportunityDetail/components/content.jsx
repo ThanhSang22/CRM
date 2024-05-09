@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import InputCreate from '../../../components/inputCreate';
-import { Button, Rating, Switch } from '@material-tailwind/react';
+import { Avatar, Button, Rating, Switch } from '@material-tailwind/react';
 import { MdEmail, MdOutlineOpenInNew } from 'react-icons/md';
 import { GrAdd } from 'react-icons/gr';
 import opportunities from '../../../features/opportunities';
@@ -13,7 +13,7 @@ const Content = () => {
   const handleOpen = () => setOpen(!open);
   const { id } = useParams();
 
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
   // useEffect(() => {
   //   dispatch(getOpportunities());
@@ -109,11 +109,38 @@ const Content = () => {
                 }}
               />
             </div>
-            <InputCreate
+            <div className={`flex gap-3 items-center`}>
+              <h1
+                className={`font-bold w-[100px] text-[#4D648D] whitespace-nowrap text-[15px] capitalize`}
+              >
+                Salepersonaaaa
+              </h1>
+              <div className="flex w-full">
+                <Avatar
+                  size="sm"
+                  src={`http://192.168.199.242:8080/avatars/${anOpportunity.salesperson?.avatar?.id}`}
+                  alt="saleperson"
+                />
+                <input
+                  type="text"
+                  className="w-[90%] outline-none border-b-[#000000] border-b-[0.2px] text-black"
+                  onChange={handleChange}
+                  value={anOpportunity.salesperson?.fullname}
+                  name="salesperson"
+                />
+              </div>
+            </div>
+            {/* <InputCreate
               name="salesperson"
               value={anOpportunity.salesperson?.fullname}
               onChange={handleChange}
-            />
+            >
+              <Avatar
+                size="sm"
+                src={`http://192.168.199.242:8080/avatars/${anOpportunity.salesperson?.avatar?.id}`}
+                alt="saleperson"
+              />
+            </InputCreate> */}
             <div className="flex gap-7">
               <h1 className="font-bold text-[#4D648D]">Priority</h1>
               <Rating count={3} />

@@ -21,6 +21,7 @@ const contactsSlice = createSlice({
   name: 'contacts',
   initialState: {
     contacts: [],
+    contact: null,
     loading: 'idle',
     error: null,
   },
@@ -54,13 +55,18 @@ const contactsSlice = createSlice({
       .addCase(getContacts.rejected, (state, action) => {
         state.loading = 'fail';
         state.error = action.payload;
+      })
+      .addCase(getAContact.fulfilled, (state, action) => {
+        state.loading = 'success';
+        state.contact = action.payload;
+      })
+      .addCase(editContact.fulfilled, (state, action) => {
+        state.loading = 'success';
+        state.contact = action.payload;
       });
   },
 });
 
 // Export các action creators và reducer
-// export const { getAllContacts } = contactsSlice.actions;
+export const { contactUpdate } = contactsSlice.actions;
 export default contactsSlice.reducer;
-
-export const selectContactById = (state, contactId) =>
-  state.contacts.contacts.find((contact) => contact.id === contactId);

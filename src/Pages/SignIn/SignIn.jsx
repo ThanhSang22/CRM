@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -36,26 +36,9 @@ const SignIn = () => {
   const navigate = useNavigate();
   const authState = useSelector((state) => state.auth);
 
-  console.log('error:' + authState.error);
-
-  console.log('loading:' + authState.loading);
   if (authState.userLogin != null) {
     navigate('/kanban-board');
   }
-  // const handleLogin = async (payload) => {
-  //   try {
-  //     const res = await auth.login(payload);
-  //     if (res) {
-  //       // Save token to local storage
-  //       localStorage.setItem('token', res.token);
-  //       // Dispatch login action
-  //       dispatch(loginSuccess(res.token));
-  //       navigate('/kanban-board');
-  //     }
-  //   } catch (error) {
-  //     toast.error(`Login Failed due to ${error.message}`);
-  //   }
-  // };
 
   const onSubmit = (data) => {
     dispatch(loginUser(data));
@@ -74,7 +57,6 @@ const SignIn = () => {
           </h1>
         </div>
         <img src={cmr} alt="" className=" w-[76.55%]  mt-[100px] lg:mt-0" />
-        {/* w-[71.55%] */}
       </div>
       <div className="w-[50%] bg-white rounded-s-[40px] px-[50px] py-[30px] relative">
         <img src={logo} alt="" className="" width={140} />
@@ -84,11 +66,11 @@ const SignIn = () => {
         <div className="mt-[70px] sm:mx-auto sm:w-full sm:max-w-lg">
           <form action="#" onSubmit={handleSubmit(onSubmit)}>
             <CustomInput
-              icon1={<FaRegUser />}
+              icon={<FaRegUser />}
               id={'username'}
               name={username}
               setName={setUsername}
-              type={'username'}
+              type="text"
               placeholder={'Enter your username'}
               errors={errors.username?.message}
               register={register('username')}
@@ -96,7 +78,7 @@ const SignIn = () => {
 
             <div className="text-start mt-5">
               <CustomInput
-                icon1={<HiOutlineLockClosed />}
+                icon={<HiOutlineLockClosed />}
                 id={'password'}
                 name={password}
                 setName={setPassword}
@@ -123,7 +105,7 @@ const SignIn = () => {
                 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 
                 focus-visible:outline-indigo-600  ${authState.loading ? 'bg-[#6082bd]' : 'bg-[#4D648D]'}`}
             >
-              {authState.loading ? 'Loding...' : 'Sign in'}
+              {authState.loading === 'pending' ? 'Loding...' : 'Sign in'}
             </button>
           </form>
         </div>
@@ -132,12 +114,11 @@ const SignIn = () => {
           Powered by Blossom
         </p>
       </div>
-      {showForgot && (
-        <ForgotPassword
-          onClose={() => setShowForgot(!showForgot)}
-          className="fixed z-50 top-0 bottom-0"
-        />
-      )}
+      <ForgotPassword
+        onClose={showForgot}
+        handler={() => setShowForgot(!showForgot)}
+        className="fixed z-50 top-0 bottom-0"
+      />
     </div>
   );
 };

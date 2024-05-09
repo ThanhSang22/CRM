@@ -1,24 +1,22 @@
 import React from 'react';
-import { Dialog, DialogBody } from '@material-tailwind/react';
+import { Dialog, DialogBody, DialogHeader } from '@material-tailwind/react';
 import { IoIosCheckmarkCircleOutline, IoIosClose } from 'react-icons/io';
 
-const Notice = ({ onNotice, des }) => {
+const Notice = ({ onNotice, handler, des }) => {
   return (
-    <Dialog
-      open={onNotice}
-      handler={onNotice}
-      className="w-[780px] space-y-7 py-6 px-[30px] bg-white rounded-[10px] flex flex-col justify-between"
-    >
-      <span
-        className="text-4xl text-end flex justify-end text-[#8E8E8E] cursor-pointer"
-        onClick={onNotice}
-      >
-        <IoIosClose />
-      </span>
-      <div className="flex justify-center">
-        <IoIosCheckmarkCircleOutline className="text-[#129D28]" size={120} />
-      </div>
+    <Dialog open={onNotice} handler={handler} size="lg">
+      <DialogHeader>
+        <span
+          className="text-4xl text-end flex justify-end text-[#8E8E8E] cursor-pointer"
+          onClick={handler}
+        >
+          <IoIosClose />
+        </span>
+      </DialogHeader>
       <DialogBody>
+        <div className="flex justify-center">
+          <IoIosCheckmarkCircleOutline className="text-[#129D28]" size={120} />
+        </div>
         <p className="text-center">{des}</p>
       </DialogBody>
     </Dialog>

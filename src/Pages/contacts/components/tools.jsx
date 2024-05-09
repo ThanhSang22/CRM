@@ -4,8 +4,8 @@ import EditContact from './editContact';
 import { RiDeleteBin6Line } from 'react-icons/ri';
 
 const Tools = () => {
-  // const [onCreateContact, setOnCreateContact] = useState(false);
   const [onEditContact, setOnEditContact] = useState(false);
+
   return (
     <>
       <div className="flex gap-5">
@@ -21,7 +21,6 @@ const Tools = () => {
           Delete
         </button>
       </div>
-      {/* {onCreateContact && <CreateContact onContact={() => setOnCreateContact(false)} />} */}
       {onEditContact && <EditContact onEdit={() => setOnEditContact(false)} />}
     </>
   );

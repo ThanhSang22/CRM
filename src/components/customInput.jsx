@@ -3,8 +3,8 @@ import { BsEye, BsEyeSlash } from 'react-icons/bs';
 import classNames from 'classnames';
 
 const CustomInput = ({
-  icon1,
   id,
+  icon,
   name,
   setName,
   type,
@@ -22,11 +22,11 @@ const CustomInput = ({
   return (
     <div>
       <div className="mt-2 relative">
-        {icon1 && (
+        {icon && (
           <span
             className={`inline-block absolute top-4 left-4 text-2xl font-medium text-[#4D648D] ${classNameIcon}`}
           >
-            {icon1}
+            {icon}
           </span>
         )}
         <input

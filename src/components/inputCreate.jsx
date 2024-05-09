@@ -11,7 +11,7 @@ const InputCreate = ({ name, type, onChange, className, classNameA, value, child
       <div className="flex w-full">
         <input
           type={`${type || 'text'}`}
-          className="w-[90%] outline-none border-b-[#000000] border-b-[0.2px] text-black"
+          className={`w-[90%] outline-none text-black ${value ? '' : 'border-b-[#000000] border-b-[0.2px]'}`}
           onChange={onChange}
           value={value}
           name={name}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Avatar } from '@material-tailwind/react';
 import logo from '../assets/images/logo.png';
 import { IoIosArrowDown } from 'react-icons/io';
@@ -10,41 +10,30 @@ import { MdOutlineViewKanban } from 'react-icons/md';
 import { TiContacts } from 'react-icons/ti';
 import { LiaFileAltSolid } from 'react-icons/lia';
 import { BsPeople } from 'react-icons/bs';
-import { useDispatch } from 'react-redux';
-import auth from '../features/auth/api';
+import { useDispatch, useSelector } from 'react-redux';
 import useActiveMenu from '../hooks/useActiveMenu.ts';
-import { logoutUser } from '../redux/slice/authSlice.js';
+import { avartarUser, getUserLogin, logoutUser } from '../redux/slice/authSlice.js';
 
 export default function Header({ ShowChangePass }) {
-  const [user, setUser] = useState({});
   const dispatch = useDispatch();
   const { isActive } = useActiveMenu();
-  // const token = useSelector((state) => state.auth.token);
-  // console.log('token====', token);
-  // const users = useSelector((state) => state.auth.user);
-  // console.log('user====', users);
-  // const userA = useSelector((state) => state.auth.user);
+  const user = useSelector((state) => state.auth.user);
 
   useEffect(() => {
-    const getData = async () => {
-      try {
-        const res = await auth.getUser();
-        setUser(res);
-      } catch (error) {
-        console.log(error.message);
-      }
-    };
+    dispatch(getUserLogin());
+  }, [dispatch]);
 
-    getData();
-  }, []);
-
-  const roleString = user.roles?.join();
+  const roleString = user?.roles?.join();
   const role = roleString?.slice(5).toLowerCase();
 
   const navigate = useNavigate();
   const handleLogout = () => {
     dispatch(logoutUser());
     navigate('/');
+  };
+
+  const handleUpload = (file) => {
+    dispatch(avartarUser(file));
   };
 
   const data = [
@@ -133,14 +122,14 @@ export default function Header({ ShowChangePass }) {
             </div>
             <div className="flex gap-2 items-center z-50">
               <Avatar
-                src={`http://192.168.199.242:8080/avatars/${user.avatar?.id}`}
+                src={`http://192.168.199.242:8080/avatars/${user?.avatar?.id}`}
                 alt="avatar"
                 size="sm"
               />
               <Menu as="div" className="relative inline-block text-left">
                 <div>
                   <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-md text-sm">
-                    {user.fullname}
+                    {user?.fullname}
                     <IoIosArrowDown className="-mr-1 h-5 w-5 text-[#8E8E8E]" aria-hidden="true" />
                   </Menu.Button>
                 </div>
@@ -166,8 +155,10 @@ export default function Header({ ShowChangePass }) {
                               active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
                               'block w-full px-4 py-2 text-left text-sm',
                             )}
+                            onClick={handleUpload}
                           >
                             Upload Avatar
+                            <input type="file" onClick={handleUpload} />
                           </button>
                         )}
                       </Menu.Item>

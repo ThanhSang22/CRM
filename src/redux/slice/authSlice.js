@@ -11,13 +11,18 @@ export const loginUser = createAsyncThunk('auth/loginUser', async (payload) => {
   } catch (error) {
     toast.error('🦄Login Failed: Invalid account', {
       position: 'top-center',
-      autoClose: 2000,
+      autoClose: 1500,
     });
   }
 });
 
-export const avartarUser = createAsyncThunk('auth/loginUser', async (id) => {
-  const response = await auth.avatar(id); // Gọi API
+export const avartarUser = createAsyncThunk('auth/avartarUser', async (file) => {
+  const response = await auth.uploadAvartar(file); // Gọi API
+  return response;
+});
+
+export const getUserLogin = createAsyncThunk('auth/getUserLogin', async () => {
+  const response = await auth.getUser(); // Gọi API
   return response;
 });
 
@@ -26,28 +31,40 @@ const authSlice = createSlice({
   name: 'auth',
   initialState: {
     userLogin: null,
-    loading: false,
+    loading: 'ide',
     error: null,
+    user: null,
+    avatar: null,
   },
   reducers: {
     logoutUser(state) {
       localStorage.removeItem('token');
       state.userLogin = null;
+      state.isAuthenticated = false;
     },
   },
   extraReducers(builder) {
     builder
       .addCase(loginUser.pending, (state) => {
-        state.loading = true;
+        state.loading = 'pending';
         state.error = null;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
-        state.loading = false;
+        state.loading = 'successed';
         state.userLogin = action.payload;
+        state.isAuthenticated = true;
       })
       .addCase(loginUser.rejected, (state, action) => {
-        state.loading = false;
+        state.loading = 'failed';
         state.error = action.payload;
+      })
+      .addCase(getUserLogin.fulfilled, (state, action) => {
+        state.loading = 'successed';
+        state.user = action.payload;
+      })
+      .addCase(avartarUser.fulfilled, (state, action) => {
+        state.loading = 'successed';
+        state.avatar = action.payload;
       });
   },
 });

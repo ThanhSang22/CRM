@@ -2,37 +2,23 @@ import React, { Fragment, useEffect, useState } from 'react';
 import { GrFormPreviousLink, GrFormNext } from 'react-icons/gr';
 import { Menu, Transition } from '@headlessui/react';
 import { Avatar } from '@material-tailwind/react';
-import avatar from '../../../assets/images/avatar.png';
 import { IoIosArrowDown } from 'react-icons/io';
 import classNames from 'classnames';
 import { useDispatch, useSelector } from 'react-redux';
-import { logout } from '../../../redux/action/auth';
 import ChangePassword from '../../kanban/components/changePassword';
 import { Link } from 'react-router-dom';
-import auth from '../../../features/auth/api';
-import { logoutUser } from '../../../redux/slice/authSlice';
+import { getUserLogin, logoutUser } from '../../../redux/slice/authSlice';
 
 const Header = ({ company }) => {
   const [showChangePass, setShowChangePass] = useState(false);
   const dispatch = useDispatch();
-  // const [user, setUser] = useState({});
-  const user = useSelector((state) => state.auth.userLogin.user);
-  console.log('user====', user);
+  const user = useSelector((state) => state.auth.user);
 
-  // useEffect(() => {
-  //   const getData = async () => {
-  //     try {
-  //       const res = await auth.getUser();
-  //       setUser(res);
-  //     } catch (error) {
-  //       console.log(error.message);
-  //     }
-  //   };
+  useEffect(() => {
+    dispatch(getUserLogin());
+  }, [dispatch]);
 
-  //   getData();
-  // }, []);
-
-  const roleString = user.roles?.join();
+  const roleString = user?.roles?.join();
   const role = roleString?.slice(5).toLowerCase();
 
   const handleLogout = () => {
@@ -54,14 +40,14 @@ const Header = ({ company }) => {
           <div className="flex gap-2 items-center z-50">
             <Avatar
               // src={user.avatar?.physicalPath || avatar}
-              src={`http://192.168.199.242:8080/avatars/${user.avatar?.id}`}
+              src={`http://192.168.199.242:8080/avatars/${user?.avatar?.id}`}
               alt="avatar"
               size="sm"
             />
             <Menu as="div" className="relative inline-block text-left">
               <div>
                 <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-md text-sm">
-                  {user.fullname}
+                  {user?.fullname}
                   <IoIosArrowDown className="-mr-1 h-5 w-5 text-[#8E8E8E]" aria-hidden="true" />
                 </Menu.Button>
               </div>

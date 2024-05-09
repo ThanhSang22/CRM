@@ -9,12 +9,13 @@ import Button from '../../components/button';
 import { MdClose } from 'react-icons/md';
 import { FiSave } from 'react-icons/fi';
 
-function AddOpportunity({ onClose, stages }) {
+function AddOpportunity({ onClose, handleOpen, stages }) {
   const [isNotice, setIsNotice] = useState(false);
+  const handler = () => setIsNotice(!isNotice);
 
   const dispatch = useDispatch();
   const loading = useSelector((state) => state.opportunity.loading);
-  console.log('lo', loading);
+
   const [newOpportunity, setNewOpportunity] = useState({
     name: '',
     company: '',
@@ -30,7 +31,6 @@ function AddOpportunity({ onClose, stages }) {
   const handleAddOpportunityInputChange = (e) => {
     const { name, value } = e.target;
     setNewOpportunity({ ...newOpportunity, [name]: value });
-    console.log('==========', newOpportunity);
   };
 
   const handleAddOpportunity = () => {
@@ -39,48 +39,19 @@ function AddOpportunity({ onClose, stages }) {
       setIsNotice(true);
       setTimeout(() => {
         setIsNotice(false);
-      }, 2000);
-      onClose();
+      }, 1000);
+      handleOpen();
     } catch (error) {
       console.error('Error adding opportunity:', error);
     }
   };
 
-  // const [newOpportunity, setNewOpportunity] = useState({
-  //   name: '',
-  //   company: '',
-  //   email: '',
-  //   phone: '',
-  //   website: '',
-  //   address: '',
-  //   revenue: 0,
-  //   stageId: '',
-  //   customer: false,
-  // });
-
-  // const handleAddOpportunityInputChange = (e) => {
-  //   const { name, value } = e.target;
-  //   setNewOpportunity({ ...newOpportunity, [name]: value });
-  //   console.log('oppp', newOpportunity);
-  // };
-
-  // const handleAddOpportunity = async () => {
-  //   try {
-  //     // Gọi API để thêm opportunity
-  //     const addedOpportunity = await opportunities.addOpportunity(newOpportunity);
-  //     console.log('=====', addedOpportunity);
-  //     onClose();
-  //   } catch (error) {
-  //     console.error('Error adding opportunity:', error);
-  //   }
-  // };
-
   return (
     <>
-      <Dialog open={true} handler={onClose}>
+      <Dialog open={onClose} handler={handleOpen}>
         <span
           className="text-4xl text-end flex justify-end text-[#8E8E8E] cursor-pointer mt-5 mr-5"
-          onClick={onClose}
+          onClick={handleOpen}
         >
           <IoIosClose />
         </span>
@@ -96,32 +67,27 @@ function AddOpportunity({ onClose, stages }) {
                 onChange={handleAddOpportunityInputChange}
               />
               <InputCreate
-                type="text"
                 name="company"
                 placeholder="Company"
                 value={newOpportunity.company}
                 onChange={handleAddOpportunityInputChange}
               />
               <InputCreate
-                type="email"
                 name="email"
                 value={newOpportunity.email}
                 onChange={handleAddOpportunityInputChange}
               />
               <InputCreate
-                type="tel"
                 name="phone"
                 value={newOpportunity.phone}
                 onChange={handleAddOpportunityInputChange}
               />
               <InputCreate
-                type="text"
                 name="website"
                 value={newOpportunity.website}
                 onChange={handleAddOpportunityInputChange}
               />
               <InputCreate
-                type="text"
                 name="address"
                 value={newOpportunity.address}
                 onChange={handleAddOpportunityInputChange}
@@ -150,7 +116,7 @@ function AddOpportunity({ onClose, stages }) {
                       value={newOpportunity.stageId}
                       onChange={(stageId) => setNewOpportunity({ ...newOpportunity, stageId })}
                     >
-                      {stages?.map((stage) => (
+                      {stages.map((stage) => (
                         <Option name="stageId" key={stage.id} value={stage.id}>
                           {stage.name !== 'WON' && stage.name !== 'LOST' ? (
                             <p>{stage.name}</p>
@@ -181,22 +147,21 @@ function AddOpportunity({ onClose, stages }) {
             </div>
           </form>
           <div className="flex justify-center items-center gap-5">
-            <Button onClick={onClose} icon={<MdClose />} name="Cancel" className=" py-1 px-4" />
+            <Button onClick={handleOpen} icon={<MdClose />} name="Cancel" className=" py-1 px-4" />
             <Button
               onClick={handleAddOpportunity}
               icon={<FiSave />}
-              name={`${loading ? 'Saving...' : 'Save'}`}
+              name={`${!loading ? 'Saving...' : 'Save'}`}
               className="bg-[#4D648D] py-1 px-4 text-white font-semibold"
             />
           </div>
         </DialogBody>
       </Dialog>
-      {isNotice && (
-        <Notice
-          onNotice={isNotice}
-          des="You have already created a new opportunity successfully."
-        />
-      )}
+      <Notice
+        onNotice={isNotice}
+        handler={handler}
+        des="You have already created a new opportunity successfully."
+      />
     </>
   );
 }

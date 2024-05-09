@@ -31,7 +31,7 @@ const Tools = () => {
           Delete
         </button>
       </div>
-      {onCreateUser && <CreateUser onUser={() => setOnCreateUser(false)} />}
+      <CreateUser onUser={onCreateUser} handlerAddUser={() => setOnCreateUser(!onCreateUser)} />
       {onEditUser && <EditUser onEdit={() => setOnEditUser(false)} />}
     </>
   );

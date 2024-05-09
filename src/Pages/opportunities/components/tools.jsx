@@ -6,46 +6,20 @@ import { RiDeleteBin6Line } from 'react-icons/ri';
 import AddOpportunity from '../../createOpportunity/addOpportunity';
 import { useDispatch, useSelector } from 'react-redux';
 import { getStage } from '../../../redux/slice/stageSlice';
-import board from '../../../features/board/api';
 
 const Tools = () => {
   const [onCreate, setOnCreate] = useState(false);
+  const handler = () => setOnCreate(!onCreate);
+
   const stages = useSelector((state) => {
     return state.stages.stages;
   });
 
-  console.log(stages);
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(getStage());
-  }, []);
-
-  // console.log('stages', stages);
-  // const [stages, setStages] = useState([]);
-
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        const getStageData = await board.getStage();
-
-        // Kiểm tra xem res có phải là mảng không
-        if (Array.isArray(getStageData)) {
-          // setStages(getStageData); // Gán kết quả vào stages nếu res là mảng
-        } else {
-          console.error('Kết quả trả về không phải là một mảng');
-        }
-      } catch (error) {
-        console.log(error.message);
-      }
-    };
-
-    getData();
-  }, []);
-
-  const toggleCreatingOpportunity = () => {
-    setOnCreate((prevState) => !prevState);
-  };
+  }, [dispatch]);
 
   return (
     <>
@@ -70,7 +44,7 @@ const Tools = () => {
           Delete
         </button>
       </div>
-      {onCreate && <AddOpportunity onClose={toggleCreatingOpportunity} stages={stages} />}
+      <AddOpportunity onClose={onCreate} handleOpen={handler} stages={stages} />
     </>
   );
 };

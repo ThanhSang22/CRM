@@ -3,11 +3,11 @@ import { Dialog, DialogBody, DialogFooter } from '@material-tailwind/react';
 import { IoIosCheckmarkCircleOutline, IoIosClose } from 'react-icons/io';
 import { CiLogin } from 'react-icons/ci';
 
-const Notice = ({ onNotice, mail }) => {
+const Notice = ({ onNotice, handler, mail }) => {
   return (
     <Dialog
       open={onNotice}
-      handler={onNotice}
+      handler={handler}
       className="w-[780px] space-y-7 py-6 px-[30px] bg-white rounded-[10px] flex flex-col justify-between"
     >
       <span
