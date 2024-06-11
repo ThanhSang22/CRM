@@ -1,12 +1,26 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BiEditAlt } from 'react-icons/bi';
 import { IoIosAdd } from 'react-icons/io';
 import { LuFileInput } from 'react-icons/lu';
 import { RiDeleteBin6Line } from 'react-icons/ri';
-import CreateOpportunity from '../../createOpportunity/createOpportunity';
+import AddOpportunity from '../../createOpportunity/addOpportunity';
+import { useDispatch, useSelector } from 'react-redux';
+import { getStage } from '../../../redux/slice/stageSlice';
 
 const Tools = () => {
   const [onCreate, setOnCreate] = useState(false);
+  const handler = () => setOnCreate(!onCreate);
+
+  const stages = useSelector((state) => {
+    return state.stages.stages;
+  });
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getStage());
+  }, [dispatch]);
+
   return (
     <>
       <div className="flex gap-5">
@@ -30,7 +44,7 @@ const Tools = () => {
           Delete
         </button>
       </div>
-      {onCreate && <CreateOpportunity onCloseCreate={false} />}
+      <AddOpportunity onClose={onCreate} handleOpen={handler} stages={stages} />
     </>
   );
 };

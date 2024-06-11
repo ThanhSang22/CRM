@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -9,9 +9,10 @@ import { FaRegUser } from 'react-icons/fa';
 import { HiOutlineLockClosed } from 'react-icons/hi2';
 import 'react-toastify/dist/ReactToastify.css';
 import CustomInput from '../../components/customInput';
-import { toast } from 'react-toastify';
-import auth from '../../features/auth/api';
+import { ToastContainer } from 'react-toastify';
 import ForgotPassword from '../forgotPassword/forgotPassword';
+import { useDispatch, useSelector } from 'react-redux';
+import { loginUser } from '../../redux/slice/authSlice';
 
 const loginSchema = yup.object().shape({
   username: yup.string().required('*Invalid username'),
@@ -31,36 +32,21 @@ const SignIn = () => {
     resolver: yupResolver(loginSchema),
   });
 
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const authState = useSelector((state) => state.auth);
 
-  const handleLogin = async (payload) => {
-    try {
-      const res = await auth.login(payload);
-      if (res) {
-        //TODO: show message login successfully
-        console.log(res);
-        //TODO: redirect to dashboard
-        alert('Login successfully');
-        toast.success('Login successfully');
-        navigate('/kanban-board');
-      }
-    } catch (error) {
-      //TODO: show message error (message error from  BE)
-      alert(`Login Failed due to ${error.message}`);
-      toast.error(`Login Failed due to ${error.message}`);
-      console.log(error.message);
-      //  toast.error('Login Failed due to ', error.message)
-    }
-  };
+  if (authState.userLogin != null) {
+    navigate('/kanban-board');
+  }
 
   const onSubmit = (data) => {
-    console.log(data);
-    handleLogin(data);
-    // navigate('/kanban-board');
+    dispatch(loginUser(data));
   };
 
   return (
     <div className="flex bg-[#4D648D] w-full h-[100vh]">
+      <ToastContainer position="top-center" autoClose={2000} />
       <div className="w-[50%] flex flex-col items-center py-[65px] md:px-0 px-10">
         <div className="space-y-3">
           <h1 className="text-white lg:text-5xl leading-9 tracking-tight text-start font-semibold text-4xl">
@@ -71,7 +57,6 @@ const SignIn = () => {
           </h1>
         </div>
         <img src={cmr} alt="" className=" w-[76.55%]  mt-[100px] lg:mt-0" />
-        {/* w-[71.55%] */}
       </div>
       <div className="w-[50%] bg-white rounded-s-[40px] px-[50px] py-[30px] relative">
         <img src={logo} alt="" className="" width={140} />
@@ -79,13 +64,13 @@ const SignIn = () => {
           SIGN IN
         </h1>
         <div className="mt-[70px] sm:mx-auto sm:w-full sm:max-w-lg">
-          <form action="#" method="POST" onSubmit={handleSubmit(onSubmit)}>
+          <form action="#" onSubmit={handleSubmit(onSubmit)}>
             <CustomInput
-              icon1={<FaRegUser />}
+              icon={<FaRegUser />}
               id={'username'}
               name={username}
               setName={setUsername}
-              type={'username'}
+              type="text"
               placeholder={'Enter your username'}
               errors={errors.username?.message}
               register={register('username')}
@@ -93,7 +78,7 @@ const SignIn = () => {
 
             <div className="text-start mt-5">
               <CustomInput
-                icon1={<HiOutlineLockClosed />}
+                icon={<HiOutlineLockClosed />}
                 id={'password'}
                 name={password}
                 setName={setPassword}
@@ -115,12 +100,12 @@ const SignIn = () => {
 
             <button
               type="submit"
-              className="flex w-full justify-center rounded-md bg-[#4D648D] px-4 py-3 mt-[80px] text-base 
+              className={`flex w-full justify-center rounded-md bg-[#4D648D] px-4 py-3 mt-[80px] text-base 
                 font-semibold leading-6 text-white shadow-sm hover:bg-[#6082bd] 
                 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 
-                focus-visible:outline-indigo-600"
+                focus-visible:outline-indigo-600  ${authState.loading ? 'bg-[#6082bd]' : 'bg-[#4D648D]'}`}
             >
-              Sign in
+              {authState.loading === 'pending' ? 'Loding...' : 'Sign in'}
             </button>
           </form>
         </div>
@@ -129,12 +114,11 @@ const SignIn = () => {
           Powered by Blossom
         </p>
       </div>
-      {showForgot && (
-        <ForgotPassword
-          onClose={() => setShowForgot(!showForgot)}
-          className="fixed z-50 top-0 bottom-0"
-        />
-      )}
+      <ForgotPassword
+        onClose={showForgot}
+        handler={() => setShowForgot(!showForgot)}
+        className="fixed z-50 top-0 bottom-0"
+      />
     </div>
   );
 };

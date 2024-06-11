@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import Header from '../components/header';
-import ChangePassword from '../Pages/kanban/components/changePassword';
+import Header from '../../components/header';
+import ChangePassword from '../kanban/components/changePassword';
 
 const DefaultLayout = ({ children }) => {
   const [showChangePass, setShowChangePass] = useState(false);
