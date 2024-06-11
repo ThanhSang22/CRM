@@ -154,7 +154,18 @@ function Board() {
                                     </div>
                                     <p>{opportunity.revenue} VND</p>
                                     <div className="flex justify-between items-center">
-                                      <Rating count={3} />
+                                      <Rating
+                                        count={3}
+                                        value={
+                                          opportunity.priority === null
+                                            ? 0
+                                            : opportunity.priority === 'MEDIUM'
+                                              ? 1
+                                              : opportunity.priority === 'HIGH'
+                                                ? 2
+                                                : 3
+                                        }
+                                      />
                                       {opportunity.salesperson && (
                                         <Avatar
                                           src={`http://192.168.199.242:8080/avatars/${opportunity.salesperson?.avatar?.id}`}
@@ -194,11 +205,11 @@ function Board() {
         <Dialog
           open={showCongratsModal}
           handler={() => setShowCongratsModal(false)}
-          className="bg-none"
+          className="bg-opacity-0 bg-white"
         >
           <DialogBody className="flex gap-2 items-center justify-center">
             <img src={party} alt="" width={100} />
-            <h1>
+            <h1 className="text-white">
               Congratulations! <br /> You have made an opportunity won.
             </h1>
           </DialogBody>

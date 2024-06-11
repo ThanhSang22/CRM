@@ -7,6 +7,7 @@ import { FiSend } from 'react-icons/fi';
 import { MdClose } from 'react-icons/md';
 import SendEmail from './sendEmail';
 import { useDispatch, useSelector } from 'react-redux';
+import { sendQuotation } from '../../../redux/slice/mailsSilce';
 
 const Quotation = ({ openQuotation, handleOpenQuotation }) => {
   const [openEmail, setOpenEmail] = useState(false);

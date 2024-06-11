@@ -73,7 +73,8 @@ function HeaderBoard({ toggleCreatingTask, onChange }) {
           <input
             type="file"
             accept=".xlsx, .xls"
-            className="flex absolute left-[158px] top-[0%] scale-125 !cursor-pointer"
+            onClick={handleImport}
+            className="flex absolute left-[38px] top-[0%] scale-125 !cursor-pointer opacity-0"
             onChange={(e) => setFile(e.target.files[0])}
           />
         </div>

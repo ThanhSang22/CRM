@@ -16,12 +16,23 @@ export const getAContact = createAsyncThunk('contacts/getAContact', (id) => {
   return res;
 });
 
+export const addContact = createAsyncThunk('contacts/addContact', (id, payload) => {
+  const res = contact.addContact(id, payload);
+  return res;
+});
+
+export const getContactOpportunity = createAsyncThunk('contacts/getContactOpportunity', (id) => {
+  const res = contact.getContactOpportunity(id);
+  return res;
+});
+
 // Slice cho trạng thái người dùng
 const contactsSlice = createSlice({
   name: 'contacts',
   initialState: {
     contacts: [],
     contact: null,
+    contactOpportunity: null,
     loading: 'idle',
     error: null,
   },
@@ -63,6 +74,14 @@ const contactsSlice = createSlice({
       .addCase(editContact.fulfilled, (state, action) => {
         state.loading = 'success';
         state.contact = action.payload;
+      })
+      .addCase(addContact.fulfilled, (state, action) => {
+        state.loading = 'success';
+        state.contact = action.payload;
+      })
+      .addCase(getContactOpportunity.fulfilled, (state, action) => {
+        state.loading = 'success';
+        state.contactOpportunity = action.payload;
       });
   },
 });

@@ -86,7 +86,6 @@ const SendEmail = ({ open, handleOpen }) => {
             <h1 className="font-bold text-[#4D648D] whitespace-nowrap text-[15px] capitalize">
               Load cold email template
             </h1>
-            <Switch />
             <Switch
               id="custom-switch-component"
               ripple={false}

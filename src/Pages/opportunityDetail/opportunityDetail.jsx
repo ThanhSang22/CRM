@@ -19,11 +19,16 @@ import { BiEditAlt } from 'react-icons/bi';
 import { RiDeleteBin6Line } from 'react-icons/ri';
 import { getActivitiesAuto, getActivitiesSchedule } from '../../redux/slice/activitiesSilce';
 import moment from 'moment/moment';
+import CreateContact from '../contacts/components/createContact';
+import { getContactOpportunity } from '../../redux/slice/contactSlice';
+import EditContact from '../contacts/components/editContact';
 
 const OpportunityDetail = () => {
+  const [addContact, setAddContact] = useState(false);
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(!open);
   const [show, setShow] = useState(true);
+  const [openEditContact, setOpenEditContact] = useState(false);
 
   const { id } = useParams();
 
@@ -55,9 +60,12 @@ const OpportunityDetail = () => {
   );
   const activitiesAuto = useSelector((state) => state.activitiesReducer.activitiesAuto.activities);
   const user = useSelector((state) => state.auth.user);
+  const contact = useSelector((state) => state.contact.contactOpportunity);
+  console.log('++++', contact);
 
   useEffect(() => {
     dispatch(getAnOpp(id));
+    dispatch(getContactOpportunity(id));
     dispatch(getActivitiesAuto(id));
     dispatch(getActivitiesSchedule(id));
   }, [id]);
@@ -70,6 +78,7 @@ const OpportunityDetail = () => {
     const { name, value } = e.target;
     setAnOpportunity({ ...anOpportunity, [name]: value });
   };
+  console.log(anOpportunity?.priority);
 
   return (
     <div className="w-[100vw]">
@@ -77,14 +86,14 @@ const OpportunityDetail = () => {
       <div className="bg-[#D9D9D940] pt-5 px-[40px] pb-[50px]">
         <SubHeader />
         <>
-          <div className="bg-[#FFFFFF] border-[0.5px] border-[#8E8E8E] rounded-[20px] mt-5 py-8 pb-[200px]">
+          <div className="bg-[#FFFFFF] border-[0.5px] border-[#8E8E8E] rounded-[20px] mt-5 py-8 pb-[250px]">
             <div className="px-14">
               <input
                 type="text"
                 defaultValue={anOpportunity?.name}
                 className={`w-full outline-none text-black text-[25px] ${anOpportunity?.name ? '' : ' border-b-[#000000] border-b-[0.3px]'}`}
               />
-              <div className="flex w-[40%] gap-16 mt-10">
+              <div className="flex w-[30%] gap-16 mt-10">
                 <InputCreate
                   name="revenue"
                   value={anOpportunity?.stage?.revenue}
@@ -97,7 +106,7 @@ const OpportunityDetail = () => {
                   name="probability"
                   onChange={handleChange}
                   value={anOpportunity?.probability}
-                  classNameA="flex flex-col text-start !justify-start !items-start w-[60%]"
+                  classNameA="flex flex-col text-start !justify-start !items-start w-[40%]"
                 >
                   <p className="text-black font-semibold ">%</p>
                 </InputCreate>
@@ -164,14 +173,26 @@ const OpportunityDetail = () => {
                       type="text"
                       className={`outline-none text-black w-[82%] border-b-[#000000] border-b-[0.2px]`}
                       onChange={handleChange}
-                      value={anOpportunity?.salesperson?.fullname || ''}
+                      value={anOpportunity?.salesperson?.fullname}
                       name="salesperson"
                     />
                   </div>
                 </div>
                 <div className="flex gap-7">
                   <h1 className="font-bold text-[#4D648D]">Priority</h1>
-                  <Rating count={3} />
+                  <Rating
+                    count={3}
+                    value={
+                      anOpportunity?.priority === null
+                        ? 0
+                        : anOpportunity?.priority === 'MEDIUM'
+                          ? 1
+                          : anOpportunity?.priority === 'HIGH'
+                            ? 2
+                            : 3
+                    }
+                    // onChange={(priority) => setAnOpportunity(...anOpportunity, priority)}
+                  />
                 </div>
               </div>
             </div>
@@ -208,14 +229,14 @@ const OpportunityDetail = () => {
                   </div>
                   <div className=" absolute bg-white border-[0.3px] border-[#00000099] rounded-[20px] p-4">
                     <ul className="list-disc p-4">
-                      <li className="py-2">
+                      {/* <li className="py-2">
                         <div className="flex items-center text-[15px] justify-between">
                           <p className="font-medium ">Hong Nhung Nguyen</p>
                           <p>example@gmail.com</p>
                           <p>0344338244</p>
                           <MdOutlineOpenInNew className="text-[#4D648D]" />
                         </div>
-                      </li>
+                      </li> */}
                       <li className="py-2">
                         <div className="flex items-center text-[15px] gap-3">
                           <p className="font-medium">Nhung Nguyen Thi Hong</p>
@@ -224,11 +245,35 @@ const OpportunityDetail = () => {
                           <MdOutlineOpenInNew className="text-[#4D648D]" />
                         </div>
                       </li>
+                      {contact?.map((contact) => (
+                        <li className="py-2" key={contact?.id}>
+                          <div className="flex items-center text-[15px] gap-3">
+                            <p className="font-medium">{contact?.fullname}</p>
+                            <p className="text-ellipsis">{contact?.email}</p>
+                            <p>{contact?.phone}</p>
+                            <MdOutlineOpenInNew
+                              className="text-[#4D648D]"
+                              onClick={() => setOpenEditContact(!openEditContact)}
+                            />
+                          </div>
+                        </li>
+                      ))}
+                      <EditContact
+                        onEdit={openEditContact}
+                        handlerEdit={() => setOpenEditContact(!openEditContact)}
+                      />
                     </ul>
-                    <button className="flex text-[#4D648D] text-[15px] gap-2 items-center capitalize">
+                    <button
+                      onClick={() => setAddContact(!addContact)}
+                      className="flex text-[#4D648D] text-[15px] gap-2 items-center capitalize"
+                    >
                       <GrAdd size={18} />
                       <i>Add new contact</i>
                     </button>
+                    <CreateContact
+                      onContact={addContact}
+                      handlerContact={() => setAddContact(!addContact)}
+                    />
                   </div>
                 </div>
               </div>

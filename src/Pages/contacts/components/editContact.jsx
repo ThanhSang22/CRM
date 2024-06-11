@@ -8,7 +8,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import Notice from '../../../components/notice';
 import moment from 'moment/moment';
 
-const EditContact = ({ onEdit }) => {
+const EditContact = ({ onEdit, handlerEdit }) => {
   const { id } = useParams();
   const contact = useSelector((state) => state.contact.contact);
   const [isNotice, setIsNotice] = useState(false);
@@ -49,9 +49,9 @@ const EditContact = ({ onEdit }) => {
   };
 
   return (
-    <Dialog open={true} handler={onEdit} className="py-4 px-5">
+    <Dialog open={onEdit} handler={handlerEdit} className="py-4 px-5">
       <DialogHeader className="flex !justify-end">
-        <spans className="text-4xl text-end text-[#8E8E8E] cursor-pointer" onClick={onEdit}>
+        <spans className="text-4xl text-end text-[#8E8E8E] cursor-pointer" onClick={handlerEdit}>
           <Link to="/contacts">
             <IoIosClose />
           </Link>
@@ -114,7 +114,7 @@ const EditContact = ({ onEdit }) => {
       </DialogBody>
       <DialogFooter className="flex justify-center items-center gap-5 mb-3 mt-6">
         <button
-          onClick={onEdit}
+          onClick={handlerEdit}
           className="border-[1px] border-gray-500 py-1 px-4 rounded-[5px] text-gray-500 text-lg text-center flex justify-center "
         >
           <Link to="/contacts">Cancel</Link>
